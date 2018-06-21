@@ -3,6 +3,7 @@ using AzureStorage.Queue;
 using AzureStorage.Tables;
 using Common.Log;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Entities;
+using Lykke.Service.ConfirmationCodes.AzureRepositories.Factories;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Messages;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Settings;
@@ -18,8 +19,6 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
         private const string TableNameSmsVerificationCodes = "SmsVerificationCodes";
         private const string TableNameSmsVerificationPriorityCodes = "SmsVerificationPriorityCodes";
         private const string TableNameEmailVerificationPriorityCodes = "EmailVerificationPriorityCodes";
-        private const string TableNameEmailVerificationMock = "MockMails";
-        private const string TableNameSmsVerificationMock = "MockSms";
         private const string TableNameApiCalls = "ApiSuccessfulCalls";
         public const string TableEmailAttachmentsMock = "EmailAttachmentsMock";
 
@@ -43,20 +42,30 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register<ISmsCommandProducer>(y => 
+            builder.Register<ISmsCommandProducer>(y =>
                 new SmsCommandProducer(AzureQueueExt.Create(
                     _smsNotificationsSettings.ConnectionString(x => x.AzureQueue.ConnectionString),
                     _smsNotificationsSettings.CurrentValue.AzureQueue.QueueName)));
 
-            builder.Register<ISmsVerificationCodeRepository>(y => new SmsVerificationCodeRepository(
-                AzureTableStorage<SmsVerificationCodeEntity>.Create(_personalDataConnString, TableNameSmsVerificationCodes, _log),
-                AzureTableStorage<SmsVerificationPriorityCodeEntity>.Create(_personalDataConnString, TableNameSmsVerificationPriorityCodes, _log))
-            );
+            builder.RegisterType<VerificationCodesFactory>().AsImplementedInterfaces().SingleInstance();
+            builder.RegisterType<RandomValueGenerator>().AsImplementedInterfaces().SingleInstance();
+            builder.RegisterType<DateTimeProvider>().AsImplementedInterfaces().SingleInstance();
 
-            builder.Register<IEmailVerificationCodeRepository>(y => new EmailVerificationCodeRepository(
-                AzureTableStorage<EmailVerificationCodeEntity>.Create(_personalDataConnString, TableNameEmailVerificationCodes, _log),
-                AzureTableStorage<EmailVerificationPriorityCodeEntity>.Create(_personalDataConnString, TableNameEmailVerificationPriorityCodes, _log))
-            );
+            builder.Register(x =>
+                AzureTableStorage<SmsVerificationCodeEntity>.Create(_personalDataConnString,
+                    TableNameSmsVerificationCodes, _log)).AsImplementedInterfaces().SingleInstance();
+            builder.Register(x =>
+                AzureTableStorage<SmsVerificationPriorityCodeEntity>.Create(_personalDataConnString,
+                    TableNameSmsVerificationPriorityCodes, _log)).AsImplementedInterfaces().SingleInstance();
+            builder.RegisterType<SmsVerificationCodeRepository>().AsImplementedInterfaces().SingleInstance();
+
+            builder.Register(x =>
+                AzureTableStorage<EmailVerificationCodeEntity>.Create(_personalDataConnString,
+                    TableNameEmailVerificationCodes, _log)).AsImplementedInterfaces().SingleInstance();
+            builder.Register(x =>
+                AzureTableStorage<EmailVerificationPriorityCodeEntity>.Create(_personalDataConnString,
+                    TableNameEmailVerificationPriorityCodes, _log)).AsImplementedInterfaces().SingleInstance();
+            builder.RegisterType<EmailVerificationCodeRepository>().AsImplementedInterfaces().SingleInstance();
 
             builder.Register<ICallTimeLimitsRepository>(y =>
                 new CallTimeLimitsRepository(

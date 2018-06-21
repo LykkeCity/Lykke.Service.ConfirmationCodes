@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Entities;
+using Lykke.Service.ConfirmationCodes.AzureRepositories.Factories;
 using Lykke.Service.ConfirmationCodes.Core.Entities;
 using Lykke.Service.ConfirmationCodes.Core.Repositories;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -13,17 +14,20 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
     {
         private readonly INoSQLTableStorage<SmsVerificationCodeEntity> _tableStorage;
         private readonly INoSQLTableStorage<SmsVerificationPriorityCodeEntity> _manualCodesStorage;
+        private readonly ISmsVerificationCodeFactory _smsVerificationCodeFactory;
 
         public SmsVerificationCodeRepository(INoSQLTableStorage<SmsVerificationCodeEntity> tableStorage,
-            INoSQLTableStorage<SmsVerificationPriorityCodeEntity> manualCodesStorage)
+            INoSQLTableStorage<SmsVerificationPriorityCodeEntity> manualCodesStorage,
+            ISmsVerificationCodeFactory smsVerificationCodeFactory)
         {
+            _smsVerificationCodeFactory = smsVerificationCodeFactory;
             _tableStorage = tableStorage;
             _manualCodesStorage = manualCodesStorage;
         }
 
         public async Task<ISmsVerificationCode> CreateAsync(string partnerId, string phoneNum, bool generateRealCode)
         {
-            var entity = SmsVerificationCodeEntity.Create(partnerId, phoneNum, DateTime.UtcNow, generateRealCode);
+            var entity = _smsVerificationCodeFactory.CreateSmsVerificationCode(phoneNum, partnerId, generateRealCode);
             await _tableStorage.InsertAsync(entity);
             return entity;
         }
@@ -31,7 +35,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
         public async Task<ISmsVerificationCode> CreatePriorityAsync(string partnerId, string phoneNum,
             DateTime expirationDt)
         {
-            var entity = SmsVerificationPriorityCodeEntity.Create(partnerId, phoneNum, DateTime.UtcNow, expirationDt);
+            var entity = _smsVerificationCodeFactory.CreateSmsVerificationPriorityCode(phoneNum, partnerId, expirationDt);
             await _manualCodesStorage.InsertAsync(entity);
             return entity;
         }

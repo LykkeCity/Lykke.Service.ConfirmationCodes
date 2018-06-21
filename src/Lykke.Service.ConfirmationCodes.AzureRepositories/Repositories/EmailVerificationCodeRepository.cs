@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AzureStorage;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Entities;
+using Lykke.Service.ConfirmationCodes.AzureRepositories.Factories;
 using Lykke.Service.ConfirmationCodes.Core.Entities;
 using Lykke.Service.ConfirmationCodes.Core.Repositories;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -13,17 +14,22 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
     {
         private readonly INoSQLTableStorage<EmailVerificationCodeEntity> _tableStorage;
         private readonly INoSQLTableStorage<EmailVerificationPriorityCodeEntity> _priorityCodesStorage;
+        private readonly IEmailVerificationCodeFactory _emailVerificationCodeFactory;
 
-        public EmailVerificationCodeRepository(INoSQLTableStorage<EmailVerificationCodeEntity> tableStorage,
-            INoSQLTableStorage<EmailVerificationPriorityCodeEntity> priorityCodesStorage)
+        public EmailVerificationCodeRepository(
+            INoSQLTableStorage<EmailVerificationCodeEntity> tableStorage,
+            INoSQLTableStorage<EmailVerificationPriorityCodeEntity> priorityCodesStorage,
+            IEmailVerificationCodeFactory emailVerificationCodeFactory
+            )
         {
+            _emailVerificationCodeFactory = emailVerificationCodeFactory;
             _tableStorage = tableStorage;
             _priorityCodesStorage = priorityCodesStorage;
         }
 
         public async Task<IEmailVerificationCode> CreateAsync(string email, string partnerId, bool generateRealCode)
         {
-            var entity = EmailVerificationCodeEntity.Create(email, DateTime.UtcNow, generateRealCode, partnerId);
+            var entity = _emailVerificationCodeFactory.CreateEmailVerificationCode(email, partnerId, generateRealCode);
             await _tableStorage.InsertAsync(entity);
             return entity;
         }
@@ -31,7 +37,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
         public async Task<IEmailVerificationPriorityCode> CreatePriorityAsync(string email, string partnerId,
             DateTime expirationDt)
         {
-            var entity = EmailVerificationPriorityCodeEntity.Create(email, DateTime.UtcNow, expirationDt, partnerId);
+            var entity = _emailVerificationCodeFactory.CreateEmailVerificationPriorityCode(email, partnerId, expirationDt);
             await _priorityCodesStorage.InsertAsync(entity);
             return entity;
         }
