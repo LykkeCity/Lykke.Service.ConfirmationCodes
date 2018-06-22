@@ -328,3 +328,4 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+/client/Lykke.Service.ConfirmationCodes.Client/Lykke.Service.ConfirmationCodes.Client.xml
