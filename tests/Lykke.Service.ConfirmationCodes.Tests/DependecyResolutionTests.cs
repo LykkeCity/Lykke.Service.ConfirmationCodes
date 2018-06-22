@@ -23,38 +23,38 @@ namespace Lykke.Service.ConfirmationCodes.Tests
         {
             _testOutputHelper = testOutputHelper;
         }
-        [Fact(Skip = "Not working on TC now")]
-        public void ControllerParameters_CanBeResolved()
-        {
-            var builder = new ContainerBuilder();
+        //[Fact(Skip = "Not working on TC now")]
+        //public void ControllerParameters_CanBeResolved()
+        //{
+        //    var builder = new ContainerBuilder();
 
-            var settingsMock = new TestSettingsReloadingManager<AppSettings>("unit-test-settings.json");
+        //    var settingsMock = new TestSettingsReloadingManager<AppSettings>("unit-test-settings.json");
 
-            var log = RegisterMock<ILog>(builder);
-            builder.RegisterModule(new ServiceModule(settingsMock, log.Object));
-            var container = builder.Build();
+        //    var log = RegisterMock<ILog>(builder);
+        //    builder.RegisterModule(new ServiceModule(settingsMock, log.Object));
+        //    var container = builder.Build();
 
-            var unresolvedTypes = new List<string>();
-            var controllerTypes = GetAllControllers();
-            foreach (var type in controllerTypes)
-            {
-                var parameters = GetConstructorParameters(type);
-                foreach (var parameter in parameters)
-                {
-                    try
-                    {
-                        container.Resolve(parameter.ParameterType);
-                    }
-                    catch (Exception ex)
-                    {
-                        _testOutputHelper.WriteLine($"Cannot resolve service {parameter.ParameterType.Name}. Exception: {ex.Message}");
-                        unresolvedTypes.Add(parameter.ParameterType.Name);
-                    }
-                }
-            }
+        //    var unresolvedTypes = new List<string>();
+        //    var controllerTypes = GetAllControllers();
+        //    foreach (var type in controllerTypes)
+        //    {
+        //        var parameters = GetConstructorParameters(type);
+        //        foreach (var parameter in parameters)
+        //        {
+        //            try
+        //            {
+        //                container.Resolve(parameter.ParameterType);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                _testOutputHelper.WriteLine($"Cannot resolve service {parameter.ParameterType.Name}. Exception: {ex.Message}");
+        //                unresolvedTypes.Add(parameter.ParameterType.Name);
+        //            }
+        //        }
+        //    }
             
-            unresolvedTypes.Should().BeEmpty();
-        }
+        //    unresolvedTypes.Should().BeEmpty();
+        //}
 
         private static Mock<T> RegisterMock<T>(ContainerBuilder builder) where T : class
         {
