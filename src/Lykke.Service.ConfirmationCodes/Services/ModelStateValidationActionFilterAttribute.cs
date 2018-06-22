@@ -5,12 +5,12 @@ namespace Lykke.Service.ConfirmationCodes.Services
 {
     public class ModelStateValidationActionFilterAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext actionContext)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var modelState = actionContext.ModelState;
+            var modelState = context.ModelState;
 
             if (!modelState.IsValid)
-                actionContext.Result = new BadRequestResult();
+                context.Result = new BadRequestObjectResult(context.ModelState);
         }
     }
 }

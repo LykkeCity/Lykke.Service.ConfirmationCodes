@@ -86,9 +86,9 @@ namespace Lykke.Service.ConfirmationCodes.Services
             return code as IEmailVerificationPriorityCode;
         }
 
-        public async Task DeleteCodes(string email, string partnerId)
+        public Task DeleteCodes(string email, string partnerId)
         {
-            await _emailVerificationCodeRepository.DeleteCodesByEmailAsync(email, partnerId);
+            return _emailVerificationCodeRepository.DeleteCodesByEmailAsync(email, partnerId);
         }
     }
 }

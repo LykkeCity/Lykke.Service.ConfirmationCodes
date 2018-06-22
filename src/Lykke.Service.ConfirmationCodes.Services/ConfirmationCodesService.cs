@@ -113,9 +113,9 @@ namespace Lykke.Service.ConfirmationCodes.Services
             return code as ISmsVerificationPriorityCode;
         }
 
-        public async Task DeleteCodes(string partnerId, string phoneNum)
+        public Task DeleteCodes(string partnerId, string phoneNum)
         {
-            await _smsVerificationCodeRepository.DeleteCodesByPhoneNumAsync(partnerId, phoneNum);
+            return _smsVerificationCodeRepository.DeleteCodesByPhoneNumAsync(partnerId, phoneNum);
         }
     }
 }

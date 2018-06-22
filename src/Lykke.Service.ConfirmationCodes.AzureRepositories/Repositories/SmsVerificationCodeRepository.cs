@@ -61,9 +61,9 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
             return actualCode != null && actualCode.Code == codeToCheck;
         }
 
-        public async Task DeleteCodesByPhoneNumAsync(string partnerId, string phoneNum)
+        public Task DeleteCodesByPhoneNumAsync(string partnerId, string phoneNum)
         {
-            await Task.WhenAll(
+            return Task.WhenAll(
                 DeleteCodesInRepository(partnerId, phoneNum, _tableStorage),
                 DeleteCodesInRepository(partnerId, phoneNum, _manualCodesStorage)
             );
