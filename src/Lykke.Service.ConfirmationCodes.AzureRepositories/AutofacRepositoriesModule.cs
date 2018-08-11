@@ -2,6 +2,7 @@
 using AzureStorage.Queue;
 using AzureStorage.Tables;
 using Common.Log;
+using Lykke.Common.Log;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Entities;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Factories;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Messages;
@@ -20,10 +21,9 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
         private const string TableNameSmsVerificationPriorityCodes = "SmsVerificationPriorityCodes";
         private const string TableNameEmailVerificationPriorityCodes = "EmailVerificationPriorityCodes";
         private const string TableNameApiCalls = "ApiSuccessfulCalls";
-        public const string TableEmailAttachmentsMock = "EmailAttachmentsMock";
 
         private readonly IReloadingManager<SmsNotifications> _smsNotificationsSettings;
-        private readonly ILog _log;
+        
         private readonly IReloadingManager<string> _personalDataConnString;
         private readonly IReloadingManager<string> _logsConnString;
 
@@ -31,12 +31,10 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
         public AutofacRepositoriesModule(
             IReloadingManager<SmsNotifications> smsNotificationsSettings,
             IReloadingManager<string> personalDataConnString, 
-            IReloadingManager<string> logsConnString, 
-            ILog log)
+            IReloadingManager<string> logsConnString)
         {
             _logsConnString = logsConnString;
             _personalDataConnString = personalDataConnString;
-            _log = log;
             _smsNotificationsSettings = smsNotificationsSettings;
         }
 
@@ -53,23 +51,24 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
 
             builder.Register(x =>
                 AzureTableStorage<SmsVerificationCodeEntity>.Create(_personalDataConnString,
-                    TableNameSmsVerificationCodes, _log)).AsImplementedInterfaces().SingleInstance();
+                    TableNameSmsVerificationCodes, x.Resolve<ILogFactory>()
+                )).AsImplementedInterfaces().SingleInstance();
             builder.Register(x =>
                 AzureTableStorage<SmsVerificationPriorityCodeEntity>.Create(_personalDataConnString,
-                    TableNameSmsVerificationPriorityCodes, _log)).AsImplementedInterfaces().SingleInstance();
+                    TableNameSmsVerificationPriorityCodes, x.Resolve<ILogFactory>())).AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<SmsVerificationCodeRepository>().AsImplementedInterfaces().SingleInstance();
 
             builder.Register(x =>
                 AzureTableStorage<EmailVerificationCodeEntity>.Create(_personalDataConnString,
-                    TableNameEmailVerificationCodes, _log)).AsImplementedInterfaces().SingleInstance();
+                    TableNameEmailVerificationCodes, x.Resolve<ILogFactory>())).AsImplementedInterfaces().SingleInstance();
             builder.Register(x =>
                 AzureTableStorage<EmailVerificationPriorityCodeEntity>.Create(_personalDataConnString,
-                    TableNameEmailVerificationPriorityCodes, _log)).AsImplementedInterfaces().SingleInstance();
+                    TableNameEmailVerificationPriorityCodes, x.Resolve<ILogFactory>())).AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<EmailVerificationCodeRepository>().AsImplementedInterfaces().SingleInstance();
 
             builder.Register<ICallTimeLimitsRepository>(y =>
                 new CallTimeLimitsRepository(
-                    AzureTableStorage<ApiCallHistoryRecord>.Create(_logsConnString, TableNameApiCalls, _log)));
+                    AzureTableStorage<ApiCallHistoryRecord>.Create(_logsConnString, TableNameApiCalls, y.Resolve<ILogFactory>())));
         }
     }
 }
