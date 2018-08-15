@@ -5,10 +5,10 @@
       "ClientPersonalInfoConnString": "${PersonalInfoConnString}:[AzureTableStorage]"
     },
     "DeploymentSettings": {
-      "IsProduction": ${ConfirmationCodesService-IsProduction}
+      "IsProduction": "${ConfirmationCodesService-IsProduction}"
     },
     "SupportToolsSettings": {
-      "PriorityCodeExpirationInterval": ${ConfirmationCodesService-PriorityCodeExpirationInterval}
+      "PriorityCodeExpirationInterval": "${ConfirmationCodesService-PriorityCodeExpirationInterval}"
     }
   },
   "PersonalDataServiceClient": {
@@ -20,7 +20,7 @@
       "ConnectionString": "${SlackNotificationsConnString}:[AzureTableStorage]",
       "QueueName": "slack-notifications"
     },
-    "ThrottlingLimitSeconds": ${SlackNotificationsThrottlingLimit}
+    "ThrottlingLimitSeconds": "${SlackNotificationsThrottlingLimit}"
   },
   "MonitoringServiceClient": {
     "MonitoringServiceUrl": "${MonitoringServiceUrl}"
