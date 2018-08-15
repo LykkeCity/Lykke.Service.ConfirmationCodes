@@ -26,7 +26,7 @@ namespace Lykke.Service.ConfirmationCodes
                 options.Logs = logs =>
                 {
                     logs.AzureTableName = "ConfirmationCodesLog";
-                    logs.AzureTableConnectionStringResolver = settings => settings.ConfirmationCodeServiceSettings.Db.LogsConnString;
+                    logs.AzureTableConnectionStringResolver = settings => settings.ConfirmationCodesServiceSettings.Db.LogsConnString;
                 };
             });
         }

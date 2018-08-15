@@ -8,7 +8,7 @@ namespace Lykke.Service.ConfirmationCodes.Settings
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class AppSettings : BaseAppSettings
     {
-        public ConfirmationCodeServiceSettings ConfirmationCodeServiceSettings { get; set; }
+        public ConfirmationCodesServiceSettings ConfirmationCodesServiceSettings { get; set; }
         public ClientAccountServiceClientSettings ClientAccountServiceClient { get; set; }
         public SmsNotifications SmsNotifications { get; set; }
     }

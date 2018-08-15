@@ -23,17 +23,17 @@ namespace Lykke.Service.ConfirmationCodes.Modules
         {
             builder.RegisterModule(new AutofacRepositoriesModule(
                 _appSettings.Nested(x => x.SmsNotifications),
-                _appSettings.Nested(x => x.ConfirmationCodeServiceSettings.Db.ClientPersonalInfoConnString),
-                _appSettings.Nested(x => x.ConfirmationCodeServiceSettings.Db.LogsConnString)
+                _appSettings.Nested(x => x.ConfirmationCodesServiceSettings.Db.ClientPersonalInfoConnString),
+                _appSettings.Nested(x => x.ConfirmationCodesServiceSettings.Db.LogsConnString)
             ));
 
             builder.RegisterModule(new AutofacServicesModule(
-                _appSettings.CurrentValue.ConfirmationCodeServiceSettings.DeploymentSettings,
-                _appSettings.CurrentValue.ConfirmationCodeServiceSettings.SupportToolsSettings
+                _appSettings.CurrentValue.ConfirmationCodesServiceSettings.DeploymentSettings,
+                _appSettings.CurrentValue.ConfirmationCodesServiceSettings.SupportToolsSettings
                 ));
 
             builder.RegisterType<QueueSmsRequestProducer>().As<ISmsRequestProducer>().SingleInstance();
-            builder.RegisterEmailSenderViaAzureQueueMessageProducer(_appSettings.Nested(x => x.ConfirmationCodeServiceSettings.Db.ClientPersonalInfoConnString));
+            builder.RegisterEmailSenderViaAzureQueueMessageProducer(_appSettings.Nested(x => x.ConfirmationCodesServiceSettings.Db.ClientPersonalInfoConnString));
             builder.RegisterLykkeServiceClient(_appSettings.CurrentValue.ClientAccountServiceClient.ServiceUrl);
         }
     }
