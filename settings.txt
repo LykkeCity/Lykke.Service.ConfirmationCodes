@@ -1,0 +1,28 @@
+{
+  "ConfirmationCodesService": {
+    "Db": {
+      "LogsConnString": "${LogsConnString}:[AzureTableStorage]",
+      "ClientPersonalInfoConnString": "${PersonalInfoConnString}:[AzureTableStorage]"
+    },
+    "DeploymentSettings": {
+      "IsProduction": "${ConfirmationCodesService-IsProduction}"
+    },
+    "SupportToolsSettings": {
+      "PriorityCodeExpirationInterval": "${ConfirmationCodesService-PriorityCodeExpirationInterval}"
+    }
+  },
+  "PersonalDataServiceClient": {
+    "ServiceUri": "${PersonalDataServiceUrl}",
+    "ApiKey": "${PersonalDataApiKey}"
+  },
+  "SlackNotifications": {
+    "AzureQueue": {
+      "ConnectionString": "${SlackNotificationsConnString}:[AzureTableStorage]",
+      "QueueName": "slack-notifications"
+    },
+    "ThrottlingLimitSeconds": "${SlackNotificationsThrottlingLimit}"
+  },
+  "MonitoringServiceClient": {
+    "MonitoringServiceUrl": "${MonitoringServiceUrl}"
+  }
+}
