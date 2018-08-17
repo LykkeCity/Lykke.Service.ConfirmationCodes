@@ -13,7 +13,7 @@ ConfirmationCodesService:
             settings-key: ConfirmationCodesService-IsProduction
     SupportToolsSettings:
         PriorityCodeExpirationInterval: 
-            settings-key: ConfirmationCodesService-PriorityCodeExpirationInterval"
+            settings-key: ConfirmationCodesService-PriorityCodeExpirationInterval
     SmsNotifications:
         AzureQueue:
             ConnectionString: 
