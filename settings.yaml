@@ -1,30 +1,22 @@
 ConfirmationCodesService:
     Db:
-        LogsConnString: 
+        LogsConnString:
             settings-key: ConfirmationCodesService-LogsConnString
-            types: 
+            types:
                 - AzureTableStorage
-        ClientPersonalInfoConnString: 
+        ClientPersonalInfoConnString:
             settings-key: PersonalInfoConnString
-            types: 
+            types:
                 - AzureTableStorage
     DeploymentSettings:
-        IsProduction: 
+        IsProduction:
             settings-key: ConfirmationCodesService-IsProduction
     SupportToolsSettings:
-        PriorityCodeExpirationInterval: 
+        PriorityCodeExpirationInterval:
             settings-key: ConfirmationCodesService-PriorityCodeExpirationInterval
-    SmsNotifications:
-        AzureQueue:
-            ConnectionString: 
-                settings-key: ConfirmationCodesService-SmsNotifications
-                types:
-                    - AzureTableStorage
-            QueueName: 
-              settings-key: SmsNotificationsAzureQueueName
 
 ClientAccountServiceClient:
-    ClientAccountServiceUrl: 
+    ClientAccountServiceUrl:
         settings-key: ClientAccountServiceUrl
 
 MonitoringServiceClient:
@@ -39,3 +31,10 @@ SlackNotifications:
                 - AzureTableStorage
         QueueName:
             settings-key: SlackQueueName
+
+SmsNotifications:
+  AzureQueue:
+    ConnectionString:
+      settings-key: SmsNotificationsAzureQueueConnString
+    QueueName:
+      settings-key: SmsNotificationsAzureQueueName
