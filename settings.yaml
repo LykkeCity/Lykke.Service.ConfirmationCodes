@@ -21,7 +21,7 @@ ConfirmationCodesService:
                 types:
                     - AzureTableStorage
             QueueName: 
-              settings-key: SmsQueueName
+              settings-key: SmsNotificationsAzureQueueName
 
 ClientAccountServiceClient:
     ClientAccountServiceUrl: 
