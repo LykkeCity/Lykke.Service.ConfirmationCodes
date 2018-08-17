@@ -3,11 +3,11 @@ ConfirmationCodesService:
         LogsConnString: 
             settings-key: ConfirmationCodesService-LogsConnString
             types: 
-                -AzureTableStorage
+                - AzureTableStorage
         ClientPersonalInfoConnString: 
             settings-key: PersonalInfoConnString
             types: 
-                -AzureTableStorage
+                - AzureTableStorage
     DeploymentSettings:
         IsProduction: 
             settings-key: ConfirmationCodesService-IsProduction
