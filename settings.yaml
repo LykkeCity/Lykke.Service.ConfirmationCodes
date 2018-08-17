@@ -16,7 +16,7 @@ ConfirmationCodesService:
             settings-key: ConfirmationCodesService-PriorityCodeExpirationInterval
 
 ClientAccountServiceClient:
-    ClientAccountServiceUrl:
+    ServiceUrl:
         settings-key: ClientAccountServiceUrl
 
 MonitoringServiceClient:
