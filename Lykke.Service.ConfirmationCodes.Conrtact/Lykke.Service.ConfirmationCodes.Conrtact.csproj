@@ -3,8 +3,6 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MessagePack, Version=1.7.3.4, Culture=neutral, PublicKeyToken=b4a0369545f0a1be">
-      <HintPath>..\..\..\..\..\usr\local\share\dotnet\sdk\NuGetFallbackFolder\messagepack\1.7.3.4\lib\netstandard2.0\MessagePack.dll</HintPath>
-    </Reference>
+    <PackageReference Include="MessagePack" Version="1.7.3.4" />
   </ItemGroup>
 </Project>
