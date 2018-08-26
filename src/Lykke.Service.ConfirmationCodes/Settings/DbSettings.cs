@@ -9,5 +9,8 @@ namespace Lykke.Service.ConfirmationCodes.Settings
 
         [AzureTableCheck]
         public string ClientPersonalInfoConnString { get; set; }
+        
+        [AzureTableCheck]
+        public string Google2FaConnString { get; set; }
     }
 }
