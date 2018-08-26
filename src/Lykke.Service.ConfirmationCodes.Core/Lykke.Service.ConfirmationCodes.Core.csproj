@@ -1,15 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>Lykke.Service.ConfirmationCodes.Core</AssemblyName>
     <RootNamespace>Lykke.Service.ConfirmationCodes.Core</RootNamespace>
     <Version>1.0.0</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Lykke.Common" Version="7.0.3" />
     <PackageReference Include="Lykke.Service.ClientAccount.Client" Version="2.2.2" />
   </ItemGroup>
-
 </Project>

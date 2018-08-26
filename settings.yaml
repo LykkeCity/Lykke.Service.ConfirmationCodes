@@ -8,6 +8,10 @@ ConfirmationCodesService:
             settings-key: PersonalInfoConnString
             types:
                 - AzureTableStorage
+        Google2FaConnString:
+            settings-key: ConfirmationCodesService-Google2FaConnString
+            types:
+                - AzureTableStorage
     DeploymentSettings:
         IsProduction:
             settings-key: ConfirmationCodesService-IsProduction

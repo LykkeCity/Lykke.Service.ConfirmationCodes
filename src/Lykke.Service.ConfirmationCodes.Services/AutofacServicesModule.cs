@@ -20,6 +20,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
 
             builder.RegisterType<ConfirmationCodesService>().AsImplementedInterfaces();
             builder.RegisterType<EmailConfirmationService>().AsImplementedInterfaces();
+            builder.RegisterType<Google2FaService>().AsImplementedInterfaces();
         }
     }
 }
