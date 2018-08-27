@@ -96,7 +96,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
     
                         return manager;
                     })
-                    .SingleInstance()
+                    .As<EncryptedStorageManager>()
                     .AutoActivate();
             }
             else
@@ -106,7 +106,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
                     _google2faConnString,
                     TableNameGoogle2Fa,
                     x.Resolve<ILogFactory>())))
-                    .SingleInstance()
+                    .As<EncryptedStorageManager>()
                     .AutoActivate();
             }
             
@@ -116,13 +116,14 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
                         AzureTableStorage<Google2FaSecretEntity>.Create(
                             _google2faConnString,
                             TableNameGoogle2Fa,
-                            x.Resolve<ILogFactory>()), 
+                            x.Resolve<ILogFactory>()),
                         x.Resolve<EncryptedStorageManager>().Serializer))
                 .As<INoSQLTableStorage<Google2FaSecretEntity>>()
                 .SingleInstance();
             
             builder
                 .RegisterType<Google2FaRepository>()
+                .As<IGoogle2FaRepository>()
                 .SingleInstance();
         }
     }

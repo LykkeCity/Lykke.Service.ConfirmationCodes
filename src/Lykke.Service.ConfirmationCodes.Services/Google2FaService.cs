@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Lykke.GoogleAuthenticator;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories;
+using Lykke.Service.ConfirmationCodes.Core.Repositories;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 
 namespace Lykke.Service.ConfirmationCodes.Services
@@ -10,11 +11,11 @@ namespace Lykke.Service.ConfirmationCodes.Services
     [UsedImplicitly]
     public class Google2FaService : IGoogle2FaService
     {
-        private readonly Google2FaRepository _google2FaRepository;
+        private readonly IGoogle2FaRepository _google2FaRepository;
         private readonly string _appName;
 
         public Google2FaService(
-            Google2FaRepository google2FaRepository)
+            IGoogle2FaRepository google2FaRepository)
         {
             _google2FaRepository = google2FaRepository;
             _appName = "Lykke";
