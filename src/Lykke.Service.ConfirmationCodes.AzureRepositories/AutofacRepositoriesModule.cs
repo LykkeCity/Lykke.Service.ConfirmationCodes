@@ -39,6 +39,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
             IReloadingManager<string> logsConnString)
         {
             _logsConnString = logsConnString;
+            
             _personalDataConnString = personalDataConnString;
             _google2faConnString = google2faConnString;
             _smsNotificationsSettings = smsNotificationsSettings;
@@ -76,51 +77,53 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
                 new CallTimeLimitsRepository(
                     AzureTableStorage<ApiCallHistoryRecord>.Create(_logsConnString, TableNameApiCalls, y.Resolve<ILogFactory>())));
             
-            builder.Register(x =>
-                        AzureTableStorage<Google2FaSecretEntity>.Create(
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EncryptionKey")))
+            {
+                builder
+                    .Register(x =>
+                    {
+                        var manager = new EncryptedStorageManager(AzureTableStorage<EncryptionInitModel>.Create(
                             _google2faConnString,
                             TableNameGoogle2Fa,
-                            x.Resolve<ILogFactory>()))
-                .As<INoSQLTableStorage<Google2FaSecretEntity>>()
-                .SingleInstance();
-            builder.RegisterType<Google2FaRepository>().SingleInstance();
-
-            /*            
-#if DEBUG
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EncryptionKey")))
-#else
-            if ((Program.EnvInfo == "Dev" || Program.EnvInfo == "Test") && !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EncryptionKey")))
-#endif
-            {
-                var manager = new EncryptedStorageManager(AzureTableStorage<EncryptionInitModel>.Create(
-                    _google2faConnString,
-                    TableNameGoogle2Fa,
-                    _logFactory));
-                if (!manager.TrySetKey(Environment.GetEnvironmentVariable("EncryptionKey"), out string error))
-                {
-                    log.WriteFatalError("SetEncryptionKey", error);
-                    throw new InvalidOperationException("EncryptionKey is not set");
-                }
-                builder.RegisterInstance(manager);
+                            x.Resolve<ILogFactory>()));
+                        
+                        if (!manager.TrySetKey(Environment.GetEnvironmentVariable("EncryptionKey"), out string error))
+                        {
+                            var exception = new InvalidOperationException("EncryptionKey is not set");
+                            x.Resolve<ILogFactory>().CreateLog(this).WriteFatalError("SetEncryptionKey", error, exception);
+                            throw exception;
+                        }
+    
+                        return manager;
+                    })
+                    .SingleInstance()
+                    .AutoActivate();
             }
             else
             {
-                builder.RegisterInstance(new EncryptedStorageManager(AzureTableStorage<EncryptionInitModel>.Create(
+                builder
+                    .Register(x => new EncryptedStorageManager(AzureTableStorage<EncryptionInitModel>.Create(
                     _google2faConnString,
                     TableNameGoogle2Fa,
-                    _logFactory)));
+                    x.Resolve<ILogFactory>())))
+                    .SingleInstance()
+                    .AutoActivate();
             }
             
-            builder.Register(
-                    c => EncryptedTableStorageDecorator<Google2FaSecretEntity>.Create(
+            builder
+                .Register(
+                    x => EncryptedTableStorageDecorator<Google2FaSecretEntity>.Create(
                         AzureTableStorage<Google2FaSecretEntity>.Create(
                             _google2faConnString,
                             TableNameGoogle2Fa,
-                            _logFactory), 
-                        c.Resolve<EncryptedStorageManager>().Serializer))
+                            x.Resolve<ILogFactory>()), 
+                        x.Resolve<EncryptedStorageManager>().Serializer))
                 .As<INoSQLTableStorage<Google2FaSecretEntity>>()
                 .SingleInstance();
-            */
+            
+            builder
+                .RegisterType<Google2FaRepository>()
+                .SingleInstance();
         }
     }
 }
