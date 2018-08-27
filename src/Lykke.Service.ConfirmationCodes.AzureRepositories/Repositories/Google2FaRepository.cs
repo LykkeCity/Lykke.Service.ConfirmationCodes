@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AzureStorage;
+using JetBrains.Annotations;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Entities;
 using Lykke.Service.ConfirmationCodes.Core.Entities;
+using Lykke.Service.ConfirmationCodes.Core.Repositories;
 
 namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
 {
-    public class Google2FaRepository
+    [UsedImplicitly]
+    public class Google2FaRepository : IGoogle2FaRepository
     {
         private readonly INoSQLTableStorage<Google2FaSecretEntity> _tableStorage;
 
@@ -15,12 +18,12 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
             _tableStorage = tableStorage;
         }
         
-        public async Task<IGoogle2FaSecret> GetAsync(string rowKey)
+        public async Task<IGoogle2FaSecret> GetAsync(string clientId)
         {
             return
                 await _tableStorage.GetDataAsync(
                     Google2FaSecretEntity.GeneratePartitionKey(),
-                    rowKey);
+                    clientId);
         }
 
         public async Task<IGoogle2FaSecret> UpdateAsync(string clientId, bool isActive)
