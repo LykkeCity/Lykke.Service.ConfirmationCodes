@@ -34,7 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\client\Lykke.Service.ConfirmationCodes.Client\Lykke.Service.ConfirmationCodes.Client.csproj" />
-    <ProjectReference Include="..\..\Lykke.Service.ConfirmationCodes.Conrtact\Lykke.Service.ConfirmationCodes.Conrtact.csproj" />
+    <ProjectReference Include="..\..\client\Lykke.Service.ConfirmationCodes.Conrtact\Lykke.Service.ConfirmationCodes.Conrtact.csproj" />
     <ProjectReference Include="..\Lykke.Service.ConfirmationCodes.AzureRepositories\Lykke.Service.ConfirmationCodes.AzureRepositories.csproj" />
     <ProjectReference Include="..\Lykke.Service.ConfirmationCodes.Core\Lykke.Service.ConfirmationCodes.Core.csproj" />
     <ProjectReference Include="..\Lykke.Service.ConfirmationCodes.Services\Lykke.Service.ConfirmationCodes.Services.csproj" />
