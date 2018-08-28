@@ -6,7 +6,5 @@ namespace Lykke.Service.ConfirmationCodes.Settings
     {
         [AmqpCheck]
         public string RabbitConnectionString { get; set; }
-
-        public string RetryDelay { get; set; }
     }
 }
