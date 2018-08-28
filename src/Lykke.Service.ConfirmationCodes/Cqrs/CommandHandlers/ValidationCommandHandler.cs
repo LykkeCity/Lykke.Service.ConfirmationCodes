@@ -22,7 +22,7 @@ namespace Lykke.Service.ConfirmationCodes.Cqrs.CommandHandlers
         {
             if (!await _google2FaService.ClientHasEnabledAsync(command.ClientId))
             {
-                publisher.PublishEvent(new ConfirmationCodeValidationFailEvent
+                publisher.PublishEvent(new ConfirmationValidationFailedEvent
                 {
                     Id = command.Id,
                     ClientId = command.ClientId,
@@ -34,7 +34,7 @@ namespace Lykke.Service.ConfirmationCodes.Cqrs.CommandHandlers
 
             if (await _google2FaService.CheckCodeAsync(command.ClientId, command.Confirmation))
             {
-                publisher.PublishEvent(new ConfirmationCodeValidationSuccessEvent
+                publisher.PublishEvent(new ConfirmationValidationPassedEvent
                 {
                     Id = command.Id,
                     ClientId = command.ClientId
@@ -42,7 +42,7 @@ namespace Lykke.Service.ConfirmationCodes.Cqrs.CommandHandlers
             }
             else
             {
-                publisher.PublishEvent(new ConfirmationCodeValidationFailEvent
+                publisher.PublishEvent(new ConfirmationValidationFailedEvent
                 {
                     Id = command.Id,
                     ClientId = command.ClientId,

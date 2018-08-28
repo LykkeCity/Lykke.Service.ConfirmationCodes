@@ -79,8 +79,8 @@ namespace Lykke.Service.ConfirmationCodes.Modules
                             .On(commandsRoute)
                             .WithCommandsHandler<ValidationCommandHandler>()
                             .PublishingEvents(
-                                typeof(ConfirmationCodeValidationSuccessEvent),
-                                typeof(ConfirmationCodeValidationFailEvent))
+                                typeof(ConfirmationValidationPassedEvent),
+                                typeof(ConfirmationValidationFailedEvent))
                             .With(eventsRoute)
                     );
                 })

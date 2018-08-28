@@ -7,6 +7,7 @@ namespace Lykke.Service.ConfirmationCodes.Contract.Commands
     {
         public string Id { set; get; }
         public string ClientId { set; get; }
+        public string Type { set; get; }
         public string Confirmation { set; get; }
     }
 }
