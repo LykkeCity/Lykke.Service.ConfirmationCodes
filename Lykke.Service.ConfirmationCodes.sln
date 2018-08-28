@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Service.ConfirmationC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Tests", "4. Tests", "{8F9036B1-5106-4C69-B2D2-B78EE52687A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lykke.Service.ConfirmationCodes.Conrtact", "client\Lykke.Service.ConfirmationCodes.Conrtact\Lykke.Service.ConfirmationCodes.Conrtact.csproj", "{DC1AAA2E-D54B-4F06-B7C1-93318BDCBE33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lykke.Service.ConfirmationCodes.Contract", "client\Lykke.Service.ConfirmationCodes.Contract\Lykke.Service.ConfirmationCodes.Contract.csproj", "{DC1AAA2E-D54B-4F06-B7C1-93318BDCBE33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

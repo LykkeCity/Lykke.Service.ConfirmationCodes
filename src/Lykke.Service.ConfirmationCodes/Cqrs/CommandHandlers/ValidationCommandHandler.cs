@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Lykke.Cqrs;
-using Lykke.Service.ConfirmationCodes.Conrtact.Commands;
-using Lykke.Service.ConfirmationCodes.Conrtact.Events;
+using Lykke.Service.ConfirmationCodes.Contract.Commands;
+using Lykke.Service.ConfirmationCodes.Contract.Events;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 
 namespace Lykke.Service.ConfirmationCodes.Cqrs.CommandHandlers

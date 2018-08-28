@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 
-namespace Lykke.Service.ConfirmationCodes.Conrtact.Events
+namespace Lykke.Service.ConfirmationCodes.Contract.Events
 {
     [MessagePackObject(true)]
     public class Google2FaCodeValidatedEvent
