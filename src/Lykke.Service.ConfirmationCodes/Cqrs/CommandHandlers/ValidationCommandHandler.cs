@@ -18,29 +18,37 @@ namespace Lykke.Service.ConfirmationCodes.Cqrs.CommandHandlers
         }
         
         [UsedImplicitly]
-        public async Task<CommandHandlingResult> Handle(ValidateGoogle2FaCodeCommand command, IEventPublisher publisher)
+        public async Task<CommandHandlingResult> Handle(ValidateConfirmationCommand command, IEventPublisher publisher)
         {
             if (!await _google2FaService.ClientHasEnabledAsync(command.ClientId))
             {
-                publisher.PublishEvent(new Google2FaCodeValidatedEvent
+                publisher.PublishEvent(new ConfirmationCodeValidationFailEvent
                 {
                     Id = command.Id,
                     ClientId = command.ClientId,
-                    ValidationResult = Google2FaValidationResult.NotSetUp
+                    Reason = ValidationFailReason.SecondFactorNotSetUp
                 });
                 
                 return CommandHandlingResult.Ok();
             }
 
-            publisher.PublishEvent(new Google2FaCodeValidatedEvent
+            if (await _google2FaService.CheckCodeAsync(command.ClientId, command.Confirmation))
             {
-                Id = command.Id,
-                ClientId = command.ClientId,
-                ValidationResult =
-                    await _google2FaService.CheckCodeAsync(command.ClientId, command.Code)
-                        ? Google2FaValidationResult.Ok
-                        : Google2FaValidationResult.Fail
-            });
+                publisher.PublishEvent(new ConfirmationCodeValidationSuccessEvent
+                {
+                    Id = command.Id,
+                    ClientId = command.ClientId
+                });
+            }
+            else
+            {
+                publisher.PublishEvent(new ConfirmationCodeValidationFailEvent
+                {
+                    Id = command.Id,
+                    ClientId = command.ClientId,
+                    Reason = ValidationFailReason.InvalidConfirmation
+                });
+            }
             
             return CommandHandlingResult.Ok();
         }
