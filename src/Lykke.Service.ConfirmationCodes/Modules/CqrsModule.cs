@@ -75,11 +75,12 @@ namespace Lykke.Service.ConfirmationCodes.Modules
                             environment: "lykke",
                             exclusiveQueuePostfix: "k8s")),
                         Register.BoundedContext(ConfirmationCodesBoundedContext.Name)
-                            .ListeningCommands(typeof(ValidateGoogle2FaCodeCommand))
+                            .ListeningCommands(typeof(ValidateConfirmationCommand))
                             .On(commandsRoute)
                             .WithCommandsHandler<ValidationCommandHandler>()
                             .PublishingEvents(
-                                typeof(Google2FaCodeValidatedEvent))
+                                typeof(ConfirmationCodeValidationSuccessEvent),
+                                typeof(ConfirmationCodeValidationFailEvent))
                             .With(eventsRoute)
                     );
                 })
