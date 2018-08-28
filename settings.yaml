@@ -36,6 +36,12 @@ SlackNotifications:
         QueueName:
             settings-key: SlackQueueName
 
+SagasRabbitMq:
+  RabbitConnectionString:
+    settings-key: SagasRabbitMqConnStr
+    types:
+      - RabbitMq
+
 SmsNotifications:
   AzureQueue:
     ConnectionString:
