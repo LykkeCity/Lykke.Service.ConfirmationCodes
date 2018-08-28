@@ -3,7 +3,7 @@
 namespace Lykke.Service.ConfirmationCodes.Contract.Events
 {
     [MessagePackObject(true)]
-    public class ConfirmationCodeValidationFailEvent
+    public class ConfirmationValidationFailedEvent
     {
         public string Id { set; get; }
         public string ClientId { set; get; }
