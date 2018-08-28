@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 
-namespace Lykke.Service.ConfirmationCodes.Conrtact.Commands
+namespace Lykke.Service.ConfirmationCodes.Contract.Commands
 {
     [MessagePackObject(true)]
     public class ValidateGoogle2FaCodeCommand

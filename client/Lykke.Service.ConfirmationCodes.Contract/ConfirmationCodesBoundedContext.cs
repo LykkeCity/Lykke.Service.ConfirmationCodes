@@ -1,4 +1,4 @@
-﻿namespace Lykke.Service.ConfirmationCodes.Conrtact
+﻿namespace Lykke.Service.ConfirmationCodes.Contract
 {
     public class ConfirmationCodesBoundedContext
     {
