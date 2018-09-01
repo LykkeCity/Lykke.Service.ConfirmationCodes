@@ -28,7 +28,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> Post([FromBody]SendEmailConfirmationRequest model)
         {
-            await _emailConfirmationService.SendConfirmEmail(model.Email, model.PartnerId, model.ExpirationInterval, model.IsPriority);
+            await _emailConfirmationService.SendConfirmEmail(model.Email, model.PartnerId, model.IsPriority, model.ExpirationInterval);
 
             return Ok();
         }

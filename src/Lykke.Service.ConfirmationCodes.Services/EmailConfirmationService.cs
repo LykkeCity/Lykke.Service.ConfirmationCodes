@@ -26,7 +26,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
             _supportToolsSettings = supportToolsSettings;
         }
 
-        public async Task<string> SendConfirmEmail(string email, string partnerId, int expirationInterval, bool isPriority = false)
+        public async Task<string> SendConfirmEmail(string email, string partnerId, bool isPriority = false, int expirationInterval = 0)
         {
             IEmailVerificationCode emailCode;
             DateTime expDate;
@@ -54,7 +54,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
             return emailCode.Code;
         }
 
-        public async Task<string> SendConfirmCypEmail(string email, string partnerId, int expirationInterval, bool createPriorityCode = false)
+        public async Task<string> SendConfirmCypEmail(string email, string partnerId, bool createPriorityCode = false, int expirationInterval = 0)
         {
             IEmailVerificationCode emailCode;
             DateTime expDate;

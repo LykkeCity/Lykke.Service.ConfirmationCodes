@@ -40,8 +40,10 @@ namespace Lykke.Service.ConfirmationCodes.Services
             _supportToolsSettings = supportToolsSettings;
         }
 
-        public async Task<string> RequestSmsCode(string partnerId, string clientId, string phoneNumber, bool isPriority = false)
+        public async Task<string> RequestSmsCode(string partnerId, string clientId, string phoneNumber, bool isPriority = false, int expirationInterval = 0)
         {
+            DateTime expDate;
+
             var callHistory =
                 await _callTimeLimitsRepository.GetCallHistoryAsync(GetMethodName, clientId, _repeatCallsTimeSpan);
 
@@ -62,7 +64,11 @@ namespace Lykke.Service.ConfirmationCodes.Services
                 //todo: refactor if
                 if (isPriority)
                 {
-                    var expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
+                    if (expirationInterval != 0 && expirationInterval <= _supportToolsSettings.PriorityCodeExpirationInterval)
+                        expDate = DateTime.UtcNow.AddSeconds(expirationInterval);
+                    else
+                        expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
+
                     smsCode = await _smsVerificationCodeRepository.CreatePriorityAsync(partnerId, phoneNumber, expDate);
                 }
                 else
@@ -80,13 +86,18 @@ namespace Lykke.Service.ConfirmationCodes.Services
             return null;
         }
 
-        public async Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority = false)
+        public async Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority = false, int expirationInterval = 0)
         {
             ISmsVerificationCode smsCode;
+            DateTime expDate;
             //todo: refactor if
             if (isPriority)
             {
-                var expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
+                if (expirationInterval != 0 && expirationInterval <= _supportToolsSettings.PriorityCodeExpirationInterval)
+                    expDate = DateTime.UtcNow.AddSeconds(expirationInterval);
+                else
+                    expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
+
                 smsCode = await _smsVerificationCodeRepository.CreatePriorityAsync(partnerId, phoneNumber, expDate);
             }
             else
