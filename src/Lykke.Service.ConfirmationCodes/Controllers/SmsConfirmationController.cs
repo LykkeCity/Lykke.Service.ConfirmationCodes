@@ -46,6 +46,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         public async Task<IActionResult> VerifyCode([FromBody]VerifySmsConfirmationRequest model)
         {
             var isValid = await _confirmationCodesService.CheckAsync(model.PartnerId, model.Phone, model.Code);
+            if (isValid) await _confirmationCodesService.DeleteCodes(model.PartnerId, model.Phone);
 
             return Ok(new VerificationResult{IsValid = isValid });
         }
