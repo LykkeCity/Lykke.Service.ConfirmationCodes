@@ -28,7 +28,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]        
         public async Task<IActionResult> Post([FromBody]SendSmsConfirmationRequest model)
         {
-            await _confirmationCodesService.RequestSmsCode(model.PartnerId, model.Phone, model.IsPriority);
+            await _confirmationCodesService.RequestSmsCode(model.PartnerId, model.Phone, model.IsPriority, model.CodeLength);
 
             return Ok();
         }

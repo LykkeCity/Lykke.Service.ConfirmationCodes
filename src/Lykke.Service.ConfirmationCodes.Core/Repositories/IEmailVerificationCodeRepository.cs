@@ -6,9 +6,9 @@ namespace Lykke.Service.ConfirmationCodes.Core.Repositories
 {
     public interface IEmailVerificationCodeRepository
     {
-        Task<IEmailVerificationCode> CreateAsync(string email, string partnerId, bool generateRealCode);
+        Task<IEmailVerificationCode> CreateAsync(string email, string partnerId, bool generateRealCode, int codeLength);
 
-        Task<IEmailVerificationPriorityCode> CreatePriorityAsync(string email, string partnerId, DateTime expirationDt);
+        Task<IEmailVerificationPriorityCode> CreatePriorityAsync(string email, string partnerId, DateTime expirationDt, int codeLength);
 
         /// <summary>
         /// Returns the latest generated code

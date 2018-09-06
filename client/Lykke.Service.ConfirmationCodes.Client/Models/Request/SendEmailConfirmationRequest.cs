@@ -9,5 +9,9 @@
         /// Is priority code. Used for manual code resending from support.
         /// </summary>
         public bool IsPriority { get; set; }
+        /// <summary>
+        /// Length for requested code
+        /// </summary>
+        public int CodeLength { get; set; }
     }
 }
