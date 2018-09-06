@@ -13,5 +13,9 @@
         /// Length for requested code
         /// </summary>
         public int CodeLength { get; set; }
+        /// <summary>
+        /// Expiration interval in seconds
+        /// </summary>
+        public int ExpirationInterval { get; set; }
     }
 }

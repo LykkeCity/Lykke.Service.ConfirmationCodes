@@ -1,7 +1,9 @@
-﻿using Lykke.SettingsReader.Attributes;
+﻿using JetBrains.Annotations;
+using Lykke.SettingsReader.Attributes;
 
 namespace Lykke.Service.ConfirmationCodes.Settings
 {
+    [UsedImplicitly]
     public class DbSettings
     {
         [AzureTableCheck]
@@ -9,5 +11,8 @@ namespace Lykke.Service.ConfirmationCodes.Settings
 
         [AzureTableCheck]
         public string ClientPersonalInfoConnString { get; set; }
+        
+        [AzureTableCheck]
+        public string Google2FaConnString { get; set; }
     }
 }
