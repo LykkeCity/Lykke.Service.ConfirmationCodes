@@ -12,6 +12,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
     public class Google2FaService : IGoogle2FaService
     {
         private readonly IGoogle2FaRepository _google2FaRepository;
+        private readonly int _qrSideLength = 100;
         private readonly string _appName;
 
         public Google2FaService(
@@ -56,7 +57,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
 
             await _google2FaRepository.InsertOrUpdateAsync(clientId, newSecret);
             
-            var setupInfo = new TwoFactorAuthenticator().GenerateSetupCode(_appName, clientId, newSecret, 100, 100, true);
+            var setupInfo = new TwoFactorAuthenticator().GenerateSetupCode(_appName, clientId, newSecret, _qrSideLength, _qrSideLength, true);
 
             return setupInfo.ManualEntryKey;
         }

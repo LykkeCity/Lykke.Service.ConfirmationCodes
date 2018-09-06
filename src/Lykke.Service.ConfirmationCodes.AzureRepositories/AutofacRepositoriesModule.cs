@@ -101,6 +101,9 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
             }
             else
             {
+                if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                    throw new Exception("Need to set EncryptionKey in Production environment");
+                    
                 builder
                     .Register(x => new EncryptedStorageManager(AzureTableStorage<EncryptionInitModel>.Create(
                     _google2faConnString,
