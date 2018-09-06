@@ -64,19 +64,19 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// <summary>
         /// Requests Google 2FA setup for the client
         /// </summary>
-        [Post("/api/Google2FA/RequestSetup")]
+        [Post("/api/Google2FA/Setup")]
         Task<RequestSetupGoogle2FaResponse> Google2FaRequestSetupAsync([Body] RequestSetupGoogle2FaRequest model);
 
         /// <summary>
         /// Verifies that Google 2FA setup was successful by checking the code
         /// </summary>
-        [Post("/api/Google2FA/VerifySetup")]
+        [Put("/api/Google2FA/Setup")]
         Task<VerifySetupGoogle2FaResponse> Google2FaVerifySetupAsync([Body] VerifySetupGoogle2FaRequest model);
 
         /// <summary>
         /// Checks if user has Google 2FA set up
         /// </summary>
-        [Get("/api/Google2FA/ClientHasSetup")]
+        [Get("/api/Google2FA/Setup")]
         Task<bool> Google2FaClientHasSetupAsync([Query] string clientId);
 
         /// <summary>
