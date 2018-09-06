@@ -98,31 +98,33 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
                     })
                     .As<EncryptedStorageManager>()
                     .AutoActivate();
+            
+                builder
+                    .Register(
+                        x => EncryptedTableStorageDecorator<Google2FaSecretEntity>.Create(
+                            AzureTableStorage<Google2FaSecretEntity>.Create(
+                                _google2faConnString,
+                                TableNameGoogle2Fa,
+                                x.Resolve<ILogFactory>()),
+                            x.Resolve<EncryptedStorageManager>().Serializer))
+                    .As<INoSQLTableStorage<Google2FaSecretEntity>>()
+                    .SingleInstance();
             }
             else
             {
                 if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
                     throw new Exception("Need to set EncryptionKey in Production environment");
-                    
+                
                 builder
-                    .Register(x => new EncryptedStorageManager(AzureTableStorage<EncryptionInitModel>.Create(
-                    _google2faConnString,
-                    TableNameGoogle2Fa,
-                    x.Resolve<ILogFactory>())))
-                    .As<EncryptedStorageManager>()
-                    .AutoActivate();
+                    .Register(
+                        x => 
+                            AzureTableStorage<Google2FaSecretEntity>.Create(
+                                _google2faConnString,
+                                TableNameGoogle2Fa,
+                                x.Resolve<ILogFactory>()))
+                    .As<INoSQLTableStorage<Google2FaSecretEntity>>()
+                    .SingleInstance();
             }
-            
-            builder
-                .Register(
-                    x => EncryptedTableStorageDecorator<Google2FaSecretEntity>.Create(
-                        AzureTableStorage<Google2FaSecretEntity>.Create(
-                            _google2faConnString,
-                            TableNameGoogle2Fa,
-                            x.Resolve<ILogFactory>()),
-                        x.Resolve<EncryptedStorageManager>().Serializer))
-                .As<INoSQLTableStorage<Google2FaSecretEntity>>()
-                .SingleInstance();
             
             builder
                 .RegisterType<Google2FaRepository>()

@@ -33,7 +33,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         }
 
         [HttpPost]
-        [Route("RequestSetup")]
+        [Route("Setup")]
         [ProducesResponseType(typeof(RequestSetupGoogle2FaResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Setup([FromBody] RequestSetupGoogle2FaRequest model)
@@ -60,8 +60,8 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("VerifySetup")]
+        [HttpPut]
+        [Route("Setup")]
         [ProducesResponseType(typeof(VerifySetupGoogle2FaResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> VerifySetup([FromBody] VerifySetupGoogle2FaRequest model)
@@ -101,7 +101,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         }
 
         [HttpGet]
-        [Route("ClientHasSetup")]
+        [Route("Setup")]
         [ProducesResponseType(typeof(bool), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> ClientHasSetup([FromQuery] string clientId)
         {
