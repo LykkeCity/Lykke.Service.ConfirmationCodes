@@ -8,6 +8,10 @@ ConfirmationCodesService:
             settings-key: PersonalInfoConnString
             types:
                 - AzureTableStorage
+        Google2FaConnString:
+            settings-key: ConfirmationCodesService-Google2FaConnString
+            types:
+                - AzureTableStorage
     DeploymentSettings:
         IsProduction:
             settings-key: ConfirmationCodesService-IsProduction
@@ -31,6 +35,12 @@ SlackNotifications:
                 - AzureTableStorage
         QueueName:
             settings-key: SlackQueueName
+
+SagasRabbitMq:
+  RabbitConnectionString:
+    settings-key: SagasRabbitMqConnStr
+    types:
+      - RabbitMq
 
 SmsNotifications:
   AzureQueue:

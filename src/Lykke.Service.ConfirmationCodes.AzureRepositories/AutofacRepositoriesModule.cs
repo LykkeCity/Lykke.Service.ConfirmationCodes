@@ -1,6 +1,9 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
+using AzureStorage;
 using AzureStorage.Queue;
 using AzureStorage.Tables;
+using AzureStorage.Tables.Decorators;
 using Common.Log;
 using Lykke.Common.Log;
 using Lykke.Service.ConfirmationCodes.AzureRepositories.Entities;
@@ -20,21 +23,25 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
         private const string TableNameSmsVerificationCodes = "SmsVerificationCodes";
         private const string TableNameSmsVerificationPriorityCodes = "SmsVerificationPriorityCodes";
         private const string TableNameEmailVerificationPriorityCodes = "EmailVerificationPriorityCodes";
+        private const string TableNameGoogle2Fa = "Google2Fa";
         private const string TableNameApiCalls = "ApiSuccessfulCalls";
 
         private readonly IReloadingManager<SmsNotifications> _smsNotificationsSettings;
         
         private readonly IReloadingManager<string> _personalDataConnString;
+        private readonly IReloadingManager<string> _google2faConnString;
         private readonly IReloadingManager<string> _logsConnString;
-
 
         public AutofacRepositoriesModule(
             IReloadingManager<SmsNotifications> smsNotificationsSettings,
             IReloadingManager<string> personalDataConnString, 
+            IReloadingManager<string> google2faConnString, 
             IReloadingManager<string> logsConnString)
         {
             _logsConnString = logsConnString;
+            
             _personalDataConnString = personalDataConnString;
+            _google2faConnString = google2faConnString;
             _smsNotificationsSettings = smsNotificationsSettings;
         }
 
@@ -69,6 +76,60 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
             builder.Register<ICallTimeLimitsRepository>(y =>
                 new CallTimeLimitsRepository(
                     AzureTableStorage<ApiCallHistoryRecord>.Create(_logsConnString, TableNameApiCalls, y.Resolve<ILogFactory>())));
+            
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EncryptionKey")))
+            {
+                builder
+                    .Register(x =>
+                    {
+                        var manager = new EncryptedStorageManager(AzureTableStorage<EncryptionInitModel>.Create(
+                            _google2faConnString,
+                            TableNameGoogle2Fa,
+                            x.Resolve<ILogFactory>()));
+                        
+                        if (!manager.TrySetKey(Environment.GetEnvironmentVariable("EncryptionKey"), out string error))
+                        {
+                            var exception = new InvalidOperationException("EncryptionKey is not set");
+                            x.Resolve<ILogFactory>().CreateLog(this).WriteFatalError("SetEncryptionKey", error, exception);
+                            throw exception;
+                        }
+    
+                        return manager;
+                    })
+                    .As<EncryptedStorageManager>()
+                    .AutoActivate();
+            
+                builder
+                    .Register(
+                        x => EncryptedTableStorageDecorator<Google2FaSecretEntity>.Create(
+                            AzureTableStorage<Google2FaSecretEntity>.Create(
+                                _google2faConnString,
+                                TableNameGoogle2Fa,
+                                x.Resolve<ILogFactory>()),
+                            x.Resolve<EncryptedStorageManager>().Serializer))
+                    .As<INoSQLTableStorage<Google2FaSecretEntity>>()
+                    .SingleInstance();
+            }
+            else
+            {
+                if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                    throw new Exception("Need to set EncryptionKey in Production environment");
+                
+                builder
+                    .Register(
+                        x => 
+                            AzureTableStorage<Google2FaSecretEntity>.Create(
+                                _google2faConnString,
+                                TableNameGoogle2Fa,
+                                x.Resolve<ILogFactory>()))
+                    .As<INoSQLTableStorage<Google2FaSecretEntity>>()
+                    .SingleInstance();
+            }
+            
+            builder
+                .RegisterType<Google2FaRepository>()
+                .As<IGoogle2FaRepository>()
+                .SingleInstance();
         }
     }
 }
