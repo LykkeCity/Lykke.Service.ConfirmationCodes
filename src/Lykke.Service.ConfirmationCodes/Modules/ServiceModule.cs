@@ -13,7 +13,7 @@ namespace Lykke.Service.ConfirmationCodes.Modules
     public class ServiceModule : Module
     {
         private readonly IReloadingManager<AppSettings> _appSettings;
-
+        
         public ServiceModule(IReloadingManager<AppSettings> appSettings)
         {
             _appSettings = appSettings;
