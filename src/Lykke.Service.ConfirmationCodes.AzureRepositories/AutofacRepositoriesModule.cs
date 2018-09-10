@@ -14,6 +14,7 @@ using Lykke.Service.ConfirmationCodes.AzureRepositories.Settings;
 using Lykke.Service.ConfirmationCodes.Core.Messages;
 using Lykke.Service.ConfirmationCodes.Core.Repositories;
 using Lykke.SettingsReader;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Lykke.Service.ConfirmationCodes.AzureRepositories
 {
@@ -112,17 +113,21 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
             }
             else
             {
-                if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
-                    throw new Exception("Need to set EncryptionKey in Production environment");
-                
                 builder
                     .Register(
-                        x => 
-                            AzureTableStorage<Google2FaSecretEntity>.Create(
+                        x => {
+                            
+                            if(x.Resolve<IHostingEnvironment>().IsProduction())
+                                throw new Exception("Need to set EncryptionKey in Production environment");
+
+                            return AzureTableStorage<Google2FaSecretEntity>.Create(
                                 _google2faConnString,
                                 TableNameGoogle2Fa,
-                                x.Resolve<ILogFactory>()))
+                                x.Resolve<ILogFactory>());
+
+                        })
                     .As<INoSQLTableStorage<Google2FaSecretEntity>>()
+                    .AutoActivate()
                     .SingleInstance();
             }
             
