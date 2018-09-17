@@ -30,7 +30,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
         }
 
         public EmailVerificationPriorityCodeEntity CreateEmailVerificationPriorityCode(string email, string partnerId,
-            DateTime expirationDt, int codeLength)
+            DateTime expirationDt, int codeLength = 6)
         {
             var creationDt = _dateTimeProvider.GetDateTime();
             var randomCode = _randomValueGenerator.GetCode(codeLength).ToString();
