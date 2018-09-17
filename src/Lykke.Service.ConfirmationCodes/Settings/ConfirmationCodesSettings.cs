@@ -3,7 +3,7 @@
 namespace Lykke.Service.ConfirmationCodes.Settings
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class ConfirmationCodeServiceSettings
+    public class ConfirmationCodesServiceSettings
     {
         public DbSettings Db { get; set; }
         public DeploymentSettings DeploymentSettings { get; set; }

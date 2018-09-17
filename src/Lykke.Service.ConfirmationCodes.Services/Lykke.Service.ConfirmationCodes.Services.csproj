@@ -1,19 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>Lykke.Service.ConfirmationCodes.Services</AssemblyName>
     <RootNamespace>Lykke.Service.ConfirmationCodes.Services</RootNamespace>
     <Version>1.0.0</Version>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Lykke.Common" Version="6.8.4" />
-    <PackageReference Include="Lykke.Messages" Version="1.5.0" />
+    <PackageReference Include="Lykke.AzureStorage" Version="8.10.0" />
+    <PackageReference Include="Lykke.Common" Version="7.0.3" />
+    <PackageReference Include="Lykke.GoogleAuthenticator" Version="1.0.8" />
+    <PackageReference Include="Lykke.Messages" Version="1.9.0" />
   </ItemGroup>
-
   <ItemGroup>
+    <ProjectReference Include="..\Lykke.Service.ConfirmationCodes.AzureRepositories\Lykke.Service.ConfirmationCodes.AzureRepositories.csproj" />
     <ProjectReference Include="..\Lykke.Service.ConfirmationCodes.Core\Lykke.Service.ConfirmationCodes.Core.csproj" />
   </ItemGroup>
-
 </Project>
