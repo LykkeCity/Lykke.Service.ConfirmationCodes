@@ -17,25 +17,25 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
                 return new Random(seed).Next(min, max);
             }
         }
-        public string GetCode(int length)
+        public long GetCode(int length)
         {
             if (length < 4) length = 4;
             if (length > 16) length = 16;
             var codeLength = 0;
-            var code = string.Empty;
+            var codemask = string.Empty;
             while (codeLength < length)
             {
-                using (var rng = new RNGCryptoServiceProvider())
-                {
-                    var buffer = new byte[4];
-
-                    rng.GetBytes(buffer);
-                    var seed = BitConverter.ToInt32(buffer, 0);
-                    code += new Random(seed).Next(1, 9).ToString();
-                }
+                codemask += "9";
                 codeLength++;
             }
-            return code;
+            var max = Convert.ToInt64(codemask);
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                var buffer = new byte[sizeof(ulong)];
+                rng.GetBytes(buffer);
+                var seed = BitConverter.ToInt32(buffer, 0);
+                return new Random(seed).NextLong(1, max);
+            }
         }
     }
 }
