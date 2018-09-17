@@ -18,12 +18,11 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
         {
             var creationDt = _dateTimeProvider.GetDateTime();
             var randomCode = _randomValueGenerator.GetCode(codeLength).ToString();
-
             var entity = new EmailVerificationCodeEntity
             {
                 RowKey = EmailVerificationCodeEntity.GenerateRowKey(creationDt),
                 PartitionKey = EmailVerificationCodeEntity.GeneratePartitionKey(email, partnerId),
-                Code = generateRealCode ? randomCode : "0000",
+                Code = generateRealCode ? randomCode : GetDefaultCode(codeLength),
                 CreationDateTime = creationDt
             };
 
@@ -35,7 +34,6 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
         {
             var creationDt = _dateTimeProvider.GetDateTime();
             var randomCode = _randomValueGenerator.GetCode(codeLength).ToString();
-
             var entity = new EmailVerificationPriorityCodeEntity
             {
                 RowKey = EmailVerificationCodeEntity.GenerateRowKey(creationDt),
@@ -55,7 +53,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
             {
                 RowKey = SmsVerificationCodeEntity.GenerateRowKey(creationDt),
                 PartitionKey = SmsVerificationCodeEntity.GeneratePartitionKey(partnerId, phone),
-                Code = generateRealCode ? randomCode : "0000",
+                Code = generateRealCode ? randomCode : GetDefaultCode(codeLength),
                 CreationDateTime = creationDt
             };
         }
@@ -73,6 +71,18 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
                 CreationDateTime = creationDt,
                 ExpirationDate = expirationDt
             };
+        }
+
+        protected string GetDefaultCode(int codeLength)
+        {
+            var length = 0;
+            var codemask = string.Empty;
+            while (codeLength < length)
+            {
+                codemask += "0";
+                length++;
+            }
+            return codemask;
         }
     }
 }
