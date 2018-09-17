@@ -26,7 +26,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
             _supportToolsSettings = supportToolsSettings;
         }
 
-        public async Task<string> SendConfirmEmail(string email, string partnerId, bool isPriority = false, int expirationInterval = 0)
+        public async Task<string> SendConfirmEmail(string email, string partnerId, bool isPriority = false, int expirationInterval = 0, int codeLength = 6)
         {
             IEmailVerificationCode emailCode;
             DateTime expDate;
@@ -36,11 +36,11 @@ namespace Lykke.Service.ConfirmationCodes.Services
                     expDate = DateTime.UtcNow.AddSeconds(expirationInterval);
                 else
                     expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
-                emailCode = await _emailVerificationCodeRepository.CreatePriorityAsync(email, partnerId, expDate);
+                emailCode = await _emailVerificationCodeRepository.CreatePriorityAsync(email, partnerId, expDate, codeLength);
             }
             else
             {
-                emailCode = await _emailVerificationCodeRepository.CreateAsync(email, partnerId, _deploymentSettings.IsProduction);
+                emailCode = await _emailVerificationCodeRepository.CreateAsync(email, partnerId, _deploymentSettings.IsProduction, codeLength);
             }
 
             var msgData = new EmailComfirmationData
@@ -54,7 +54,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
             return emailCode.Code;
         }
 
-        public async Task<string> SendConfirmCypEmail(string email, string partnerId, bool createPriorityCode = false, int expirationInterval = 0)
+        public async Task<string> SendConfirmCypEmail(string email, string partnerId, bool createPriorityCode = false, int expirationInterval = 0, int codeLength = 6)
         {
             IEmailVerificationCode emailCode;
             DateTime expDate;
@@ -64,11 +64,11 @@ namespace Lykke.Service.ConfirmationCodes.Services
                     expDate = DateTime.UtcNow.AddSeconds(expirationInterval);
                 else
                     expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
-                emailCode = await _emailVerificationCodeRepository.CreatePriorityAsync(email, partnerId, expDate);
+                emailCode = await _emailVerificationCodeRepository.CreatePriorityAsync(email, partnerId, expDate, codeLength);
             }
             else
             {
-                emailCode = await _emailVerificationCodeRepository.CreateAsync(email, partnerId, _deploymentSettings.IsProduction);
+                emailCode = await _emailVerificationCodeRepository.CreateAsync(email, partnerId, _deploymentSettings.IsProduction, codeLength);
             }
 
             var msgData = new EmailComfirmationCypData
