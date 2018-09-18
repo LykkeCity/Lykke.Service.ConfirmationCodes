@@ -77,7 +77,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
         {
             var length = 0;
             var codemask = string.Empty;
-            while (codeLength < length)
+            while (codeLength > length)
             {
                 codemask += "0";
                 length++;
