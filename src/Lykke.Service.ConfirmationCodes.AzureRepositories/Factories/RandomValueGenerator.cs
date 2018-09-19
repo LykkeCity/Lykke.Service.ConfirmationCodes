@@ -19,6 +19,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
         }
         public long GetCode(int length)
         {
+            if (length == 0) length = 6;
             if (length < 4) length = 4;
             if (length > 16) length = 16;
             var codeLength = 0;

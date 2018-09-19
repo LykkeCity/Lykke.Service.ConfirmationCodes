@@ -75,6 +75,10 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
 
         protected string GetDefaultCode(int codeLength)
         {
+            if (codeLength == 0) codeLength = 6;
+            if (codeLength < 4) codeLength = 4;
+            if (codeLength > 16) codeLength = 16;
+
             var length = 0;
             var codemask = string.Empty;
             while (codeLength > length)
