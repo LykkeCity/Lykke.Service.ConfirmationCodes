@@ -80,6 +80,12 @@ namespace Lykke.Service.ConfirmationCodes.Client
         Task<bool> Google2FaClientHasSetupAsync([Query] string clientId);
 
         /// <summary>
+        /// Checks code entered by user
+        /// </summary>
+        [Get("/api/Google2FA/CheckCode")]
+        Task<bool> Google2FaCheckCodeAsync([Query] string clientId, [Query] string code);
+
+        /// <summary>
         /// Liveness probe
         /// </summary>
         [Get("/api/IsAlive")]
