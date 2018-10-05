@@ -116,5 +116,30 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 throw;
             }
         }
+
+        [HttpGet]
+        [Route("CheckCode")]
+        [ProducesResponseType(typeof(bool), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> Check2FaCode([FromQuery] string clientId, [FromQuery] string code)
+        {
+            try
+            {
+                if (!await _google2FaService.ClientHasEnabledAsync(clientId))
+                {
+                    throw new Google2FaNotSetUpException(clientId, "Cannot check code because client doesn't have 2FA set up");
+                }
+
+                return Ok(await _google2FaService.CheckCodeAsync(clientId, code));
+            }
+            catch (Exception exception)
+            {
+                _log.WriteError(nameof(Check2FaCode), new { clientId }, exception);
+                
+                if (exception is Google2FaNotSetUpException)
+                    return BadRequest();
+                
+                throw;
+            }
+        }
     }
 }
