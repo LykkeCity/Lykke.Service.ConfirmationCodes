@@ -42,6 +42,10 @@ SagasRabbitMq:
     types:
       - RabbitMq
 
+RedisConfiguration:
+  RedisConfiguration:
+    settings-key: ConfirmationCodesService-RedisConnectionString
+
 SmsNotifications:
   AzureQueue:
     ConnectionString:
