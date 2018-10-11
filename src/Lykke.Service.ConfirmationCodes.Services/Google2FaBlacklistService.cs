@@ -35,9 +35,9 @@ namespace Lykke.Service.ConfirmationCodes.Services
 
             const string Script = @"
                 local num=redis.call('get', KEYS[1])
-                if(num ~= nil)
+                if(num ~= false)
                 then
-                    if(num < ARGV[1])
+                    if(tonumber(num) < tonumber(ARGV[1]))
                     then
                         redis.call('del', KEYS[1])
                     end
