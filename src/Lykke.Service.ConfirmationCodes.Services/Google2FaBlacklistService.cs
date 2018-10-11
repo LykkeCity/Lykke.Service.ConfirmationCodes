@@ -35,9 +35,12 @@ namespace Lykke.Service.ConfirmationCodes.Services
 
             const string Script = @"
                 local num=redis.call('get', KEYS[1])
-                if(num < ARGV[1])
+                if(num ~= nil)
                 then
-                    redis.call('del', KEYS[1])
+                    if(num < ARGV[1])
+                    then
+                        redis.call('del', KEYS[1])
+                    end
                 end";
             
             await _redisDb.ScriptEvaluateAsync(Script, new[] {(RedisKey)clientKey}, new[] {(RedisValue)_maxTries});
