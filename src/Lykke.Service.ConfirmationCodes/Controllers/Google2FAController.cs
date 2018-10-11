@@ -22,9 +22,11 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         
         public Google2FAController(
             IGoogle2FaService google2FaService,
+            IGoogle2FaBlacklistService blacklistService,
             ILogFactory log)
         {
             _google2FaService = google2FaService;
+            _blacklistService = blacklistService;
             _log = log.CreateLog(this);
         }
 
