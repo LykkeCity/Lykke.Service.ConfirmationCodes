@@ -16,7 +16,7 @@ namespace Lykke.Service.ConfirmationCodes.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            var redis = ConnectionMultiplexer.Connect(_settings.RedisConfiguration);
+            var redis = ConnectionMultiplexer.Connect(_settings.ConnectionString);
 
             builder.RegisterInstance(redis).SingleInstance();
             builder.Register(

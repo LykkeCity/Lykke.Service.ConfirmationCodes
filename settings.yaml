@@ -45,7 +45,7 @@ SagasRabbitMq:
       - RabbitMq
 
 RedisConfiguration:
-  RedisConfiguration:
+  ConnectionString:
     settings-key: ConfirmationCodesService-RedisConnectionString
 
 SmsNotifications:
