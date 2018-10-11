@@ -1,9 +1,11 @@
 ﻿using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 using StackExchange.Redis;
 
 namespace Lykke.Service.ConfirmationCodes.Services
 {
+    [UsedImplicitly]
     public class Google2FaBlacklistService : IGoogle2FaBlacklistService
     {
         private readonly IDatabase _redisDb;
