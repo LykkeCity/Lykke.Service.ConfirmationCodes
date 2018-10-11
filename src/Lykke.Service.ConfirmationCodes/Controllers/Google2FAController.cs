@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Common.Log;
 using Lykke.Common.Log;
-using Lykke.HttpClientGenerator;
-using Lykke.Service.ConfirmationCodes.AzureRepositories;
-using Lykke.Service.ConfirmationCodes.Client;
 using Lykke.Service.ConfirmationCodes.Client.Models.Request;
 using Lykke.Service.ConfirmationCodes.Client.Models.Response;
 using Lykke.Service.ConfirmationCodes.Core.Exceptions;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 using Lykke.Service.ConfirmationCodes.Services;
 using Microsoft.AspNetCore.Mvc;
-using Refit;
 
 namespace Lykke.Service.ConfirmationCodes.Controllers
 {
@@ -22,6 +17,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
     public class Google2FAController : Controller
     {
         private readonly IGoogle2FaService _google2FaService;
+        private readonly IGoogle2FaBlacklistService _blacklistService;
         private readonly ILog _log;
         
         public Google2FAController(
@@ -129,15 +125,36 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                     throw new Google2FaNotSetUpException(clientId, "Cannot check code because client doesn't have 2FA set up");
                 }
 
-                return Ok(await _google2FaService.CheckCodeAsync(clientId, code));
+                if (await _blacklistService.IsClientBlockedAsync(clientId))
+                {
+                    throw new Google2FaTooManyAttemptsException(clientId, "");
+                }
+                
+                var codeWasValid = await _google2FaService.CheckCodeAsync(clientId, code);
+
+                if (codeWasValid)
+                {
+                    await _blacklistService.ClientSucceededAsync(clientId);
+                }
+                else
+                {
+                    await _blacklistService.ClientFailedAsync(clientId);
+                }
+
+                return Ok(codeWasValid);
             }
             catch (Exception exception)
             {
                 _log.WriteError(nameof(Check2FaCode), new { clientId }, exception);
                 
-                if (exception is Google2FaNotSetUpException)
-                    return BadRequest();
-                
+                switch (exception)
+                {
+                    case Google2FaNotSetUpException _:
+                        return BadRequest();
+                    case Google2FaTooManyAttemptsException _:
+                        return StatusCode(403);
+                }
+
                 throw;
             }
         }
