@@ -10,6 +10,16 @@ namespace Lykke.Service.ConfirmationCodes.Services
     {
         private readonly IDatabase _redisDb;
         private readonly int _maxTries;
+        
+        private const string SuccessScript = @"
+                local num=redis.call('get', KEYS[1])
+                if(num ~= false)
+                then
+                    if(tonumber(num) < tonumber(ARGV[1]))
+                    then
+                        redis.call('del', KEYS[1])
+                    end
+                end";
 
         public Google2FaBlacklistService(
             IDatabase redisDb,
@@ -32,21 +42,11 @@ namespace Lykke.Service.ConfirmationCodes.Services
         public async Task ClientSucceededAsync(string clientId)
         {
             var clientKey = GetCounterKeyForClient(clientId);
-
-            const string Script = @"
-                local num=redis.call('get', KEYS[1])
-                if(num ~= false)
-                then
-                    if(tonumber(num) < tonumber(ARGV[1]))
-                    then
-                        redis.call('del', KEYS[1])
-                    end
-                end";
             
-            await _redisDb.ScriptEvaluateAsync(Script, new[] {(RedisKey)clientKey}, new[] {(RedisValue)_maxTries});
+            await _redisDb.ScriptEvaluateAsync(SuccessScript, new[] {(RedisKey)clientKey}, new[] {(RedisValue)_maxTries});
         }
 
-        private string GetCounterKeyForClient(string clientId)
+        private static string GetCounterKeyForClient(string clientId)
         {
             return $"Google2FaFailsCounter:{clientId}";
         }

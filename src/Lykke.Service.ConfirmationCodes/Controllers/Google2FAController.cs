@@ -129,7 +129,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
 
                 if (await _blacklistService.IsClientBlockedAsync(clientId))
                 {
-                    throw new Google2FaTooManyAttemptsException(clientId, "");
+                    throw new Google2FaTooManyAttemptsException(clientId, "Client has exceeded maximum consecutive failed verification attempts");
                 }
                 
                 var codeWasValid = await _google2FaService.CheckCodeAsync(clientId, code);
