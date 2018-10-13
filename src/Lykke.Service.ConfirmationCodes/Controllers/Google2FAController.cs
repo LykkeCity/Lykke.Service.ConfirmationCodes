@@ -132,9 +132,9 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                     throw new Google2FaTooManyAttemptsException(clientId, "Client has exceeded maximum consecutive failed verification attempts");
                 }
                 
-                var codeWasValid = await _google2FaService.CheckCodeAsync(clientId, code);
+                var codeIsValid = await _google2FaService.CheckCodeAsync(clientId, code);
 
-                if (codeWasValid)
+                if (codeIsValid)
                 {
                     await _blacklistService.ClientSucceededAsync(clientId);
                 }
@@ -143,7 +143,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                     await _blacklistService.ClientFailedAsync(clientId);
                 }
 
-                return Ok(codeWasValid);
+                return Ok(codeIsValid);
             }
             catch (Exception exception)
             {
