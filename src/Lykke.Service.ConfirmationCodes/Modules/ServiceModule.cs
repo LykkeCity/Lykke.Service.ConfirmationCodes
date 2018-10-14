@@ -30,8 +30,8 @@ namespace Lykke.Service.ConfirmationCodes.Modules
 
             builder.RegisterModule(new AutofacServicesModule(
                 _appSettings.CurrentValue.ConfirmationCodesService.DeploymentSettings,
-                _appSettings.CurrentValue.ConfirmationCodesService.SupportToolsSettings
-                ));
+                _appSettings.CurrentValue.ConfirmationCodesService.SupportToolsSettings,
+                _appSettings.CurrentValue.ConfirmationCodesService.Google2FaConfirmationMaxTries));
 
             builder.RegisterType<QueueSmsRequestProducer>().As<ISmsRequestProducer>().SingleInstance();
             builder.RegisterEmailSenderViaAzureQueueMessageProducer(_appSettings.Nested(x => x.ConfirmationCodesService.Db.ClientPersonalInfoConnString));

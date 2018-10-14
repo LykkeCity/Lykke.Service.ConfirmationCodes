@@ -12,5 +12,6 @@ namespace Lykke.Service.ConfirmationCodes.Settings
         public ClientAccountServiceClientSettings ClientAccountServiceClient { get; set; }
         public SmsNotifications SmsNotifications { get; set; }
         public SagasRabbitMqSettings SagasRabbitMq { set; get; }
+        public CacheSettings RedisConfiguration { get; set; }
     }
 }

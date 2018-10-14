@@ -6,11 +6,16 @@ namespace Lykke.Service.ConfirmationCodes.Services
     {
         private readonly IDeploymentSettings _deploymentSettings;
         private readonly ISupportToolsSettings _supportToolsSettings;
+        private readonly int _google2FaMaxTries;
 
-        public AutofacServicesModule(IDeploymentSettings deploymentSettings, ISupportToolsSettings supportToolsSettings)
+        public AutofacServicesModule(
+            IDeploymentSettings deploymentSettings,
+            ISupportToolsSettings supportToolsSettings,
+            int google2FaMaxTries)
         {
             _supportToolsSettings = supportToolsSettings;
             _deploymentSettings = deploymentSettings;
+            _google2FaMaxTries = google2FaMaxTries;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -21,6 +26,9 @@ namespace Lykke.Service.ConfirmationCodes.Services
             builder.RegisterType<ConfirmationCodesService>().AsImplementedInterfaces();
             builder.RegisterType<EmailConfirmationService>().AsImplementedInterfaces();
             builder.RegisterType<Google2FaService>().AsImplementedInterfaces();
+            builder.RegisterType<Google2FaBlacklistService>()
+                .AsImplementedInterfaces()
+                .WithParameter("maxTries", _google2FaMaxTries);
         }
     }
 }

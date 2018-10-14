@@ -18,6 +18,8 @@ ConfirmationCodesService:
     SupportToolsSettings:
         PriorityCodeExpirationInterval:
             settings-key: ConfirmationCodesService-PriorityCodeExpirationInterval
+    Google2FaConfirmationMaxTries:
+        settings-key: ConfirmationCodesService-Google2FaConfirmationMaxTries
 
 ClientAccountServiceClient:
     ServiceUrl:
@@ -41,6 +43,10 @@ SagasRabbitMq:
     settings-key: SagasRabbitMqConnStr
     types:
       - RabbitMq
+
+RedisConfiguration:
+  ConnectionString:
+    settings-key: ConfirmationCodesService-RedisConnectionString
 
 SmsNotifications:
   AzureQueue:
