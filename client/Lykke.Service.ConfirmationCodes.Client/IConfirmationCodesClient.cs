@@ -88,8 +88,8 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// <summary>
         /// Check if user is blacklisted
         /// </summary>
-        [Get("/api/Google2FA/IsClientBlacklisted")]
-        Task<bool> Google2FaIsClientBlacklistedAsync([Query] string clientId);
+        [Get("/api/Google2FA/Blacklist")]
+        Task<Google2FaBlacklistCheckResponse> Google2FaIsClientBlacklistedAsync([Query] string clientId);
 
         /// <summary>
         /// Liveness probe
