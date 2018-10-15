@@ -84,6 +84,12 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// </summary>
         [Get("/api/Google2FA/CheckCode")]
         Task<bool> Google2FaCheckCodeAsync([Query] string clientId, [Query] string code);
+        
+        /// <summary>
+        /// Check if user is blacklisted
+        /// </summary>
+        [Get("/api/Google2FA/Blacklist")]
+        Task<Google2FaBlacklistCheckResponse> Google2FaIsClientBlacklistedAsync([Query] string clientId);
 
         /// <summary>
         /// Liveness probe

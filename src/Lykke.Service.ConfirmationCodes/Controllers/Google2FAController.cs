@@ -160,5 +160,33 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 throw;
             }
         }
+
+        [HttpGet]
+        [Route("Blacklist")]
+        [ProducesResponseType(typeof(Google2FaBlacklistCheckResponse), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> IsClientBlacklisted([FromQuery] string clientId)
+        {
+            try
+            {
+                if (!await _google2FaService.ClientHasEnabledAsync(clientId))
+                {
+                    throw new Google2FaNotSetUpException(clientId, "Cannot check blacklist because client doesn't have 2FA set up");
+                }
+
+                return Ok(new Google2FaBlacklistCheckResponse { IsClientBlacklisted = await _blacklistService.IsClientBlockedAsync(clientId) });
+            }
+            catch (Exception exception)
+            {
+                _log.WriteError(nameof(IsClientBlacklisted), new { clientId }, exception);
+
+                switch (exception)
+                {
+                    case Google2FaNotSetUpException _:
+                        return BadRequest();
+                }
+
+                throw;
+            }
+        }
     }
 }
