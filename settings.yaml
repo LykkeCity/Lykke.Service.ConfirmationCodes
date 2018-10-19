@@ -46,7 +46,7 @@ SagasRabbitMq:
 
 RedisConfiguration:
   ConnectionString:
-    settings-key: ConfirmationCodesService-RedisConnectionString
+    settings-key: RedisClientAccountConnString
 
 SmsNotifications:
   AzureQueue:
