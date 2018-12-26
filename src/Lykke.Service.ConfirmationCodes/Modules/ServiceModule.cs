@@ -25,7 +25,7 @@ namespace Lykke.Service.ConfirmationCodes.Modules
                 _appSettings.Nested(x => x.SmsNotifications),
                 _appSettings.Nested(x => x.ConfirmationCodesService.Db.ClientPersonalInfoConnString),
                 _appSettings.Nested(x => x.ConfirmationCodesService.Db.Google2FaConnString),
-                _appSettings.Nested(x => x.ConfirmationCodesService.Db.CallLimitsConnString)
+                _appSettings.Nested(x => x.ConfirmationCodesService.Db.LogsConnString)
             ));
 
             builder.RegisterModule(new AutofacServicesModule(

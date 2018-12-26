@@ -31,15 +31,15 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
         
         private readonly IReloadingManager<string> _personalDataConnString;
         private readonly IReloadingManager<string> _google2faConnString;
-        private readonly IReloadingManager<string> _callLimitsConnString;
+        private readonly IReloadingManager<string> _logsConnString;
 
         public AutofacRepositoriesModule(
             IReloadingManager<SmsNotifications> smsNotificationsSettings,
             IReloadingManager<string> personalDataConnString, 
             IReloadingManager<string> google2faConnString, 
-            IReloadingManager<string> callLimitsConnString)
+            IReloadingManager<string> logsConnString)
         {
-            _callLimitsConnString = callLimitsConnString;
+            _logsConnString = logsConnString;
             
             _personalDataConnString = personalDataConnString;
             _google2faConnString = google2faConnString;
@@ -76,7 +76,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories
 
             builder.Register<ICallTimeLimitsRepository>(y =>
                 new CallTimeLimitsRepository(
-                    AzureTableStorage<ApiCallHistoryRecord>.Create(_callLimitsConnString, TableNameApiCalls, y.Resolve<ILogFactory>())));
+                    AzureTableStorage<ApiCallHistoryRecord>.Create(_logsConnString, TableNameApiCalls, y.Resolve<ILogFactory>())));
             
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EncryptionKey")))
             {
