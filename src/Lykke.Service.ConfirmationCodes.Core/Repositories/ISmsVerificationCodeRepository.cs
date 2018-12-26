@@ -6,9 +6,9 @@ namespace Lykke.Service.ConfirmationCodes.Core.Repositories
 {
     public interface ISmsVerificationCodeRepository
     {
-        Task<ISmsVerificationCode> CreateAsync(string partnerId, string phoneNum, bool generateRealCode, int codeLength);
+        Task<ISmsVerificationCode> CreateAsync(string partnerId, string phoneNum, bool generateRealCode);
 
-        Task<ISmsVerificationCode> CreatePriorityAsync(string partnerId, string phoneNum, DateTime expirationDt, int codeLength);
+        Task<ISmsVerificationCode> CreatePriorityAsync(string partnerId, string phoneNum, DateTime expirationDt);
 
         /// <summary>
         /// Returns the latest generated code

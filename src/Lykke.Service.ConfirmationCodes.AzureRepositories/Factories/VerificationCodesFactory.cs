@@ -14,15 +14,14 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
             _randomValueGenerator = randomValueGenerator;
         }
 
-        public EmailVerificationCodeEntity CreateEmailVerificationCode(string email, string partnerId = null, bool generateRealCode = true, int codeLength = 6)
+        public EmailVerificationCodeEntity CreateEmailVerificationCode(string email, string partnerId = null, bool generateRealCode = true)
         {
             var creationDt = _dateTimeProvider.GetDateTime();
-            var randomCode = _randomValueGenerator.GetCode(codeLength).ToString();
             var entity = new EmailVerificationCodeEntity
             {
                 RowKey = EmailVerificationCodeEntity.GenerateRowKey(creationDt),
                 PartitionKey = EmailVerificationCodeEntity.GeneratePartitionKey(email, partnerId),
-                Code = generateRealCode ? randomCode : GetDefaultCode(codeLength),
+                Code = generateRealCode ? _randomValueGenerator.GetInt(1, 9999).ToString("0000") : "0000",
                 CreationDateTime = creationDt
             };
 
@@ -30,63 +29,45 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Factories
         }
 
         public EmailVerificationPriorityCodeEntity CreateEmailVerificationPriorityCode(string email, string partnerId,
-            DateTime expirationDt, int codeLength = 6)
+            DateTime expirationDt)
         {
             var creationDt = _dateTimeProvider.GetDateTime();
-            var randomCode = _randomValueGenerator.GetCode(codeLength).ToString();
+
             var entity = new EmailVerificationPriorityCodeEntity
             {
                 RowKey = EmailVerificationCodeEntity.GenerateRowKey(creationDt),
                 PartitionKey = EmailVerificationCodeEntity.GeneratePartitionKey(email, partnerId),
-                Code = randomCode,
+                Code = _randomValueGenerator.GetInt(1, 9999).ToString("0000"),
                 CreationDateTime = creationDt,
                 ExpirationDate = expirationDt
             };
             return entity;
         }
 
-        public SmsVerificationCodeEntity CreateSmsVerificationCode(string phone, string partnerId = null, bool generateRealCode = true, int codeLength = 6)
+        public SmsVerificationCodeEntity CreateSmsVerificationCode(string phone, string partnerId = null, bool generateRealCode = true)
         {
             var creationDt = _dateTimeProvider.GetDateTime();
-            var randomCode = _randomValueGenerator.GetCode(codeLength).ToString();
             return new SmsVerificationCodeEntity
             {
                 RowKey = SmsVerificationCodeEntity.GenerateRowKey(creationDt),
                 PartitionKey = SmsVerificationCodeEntity.GeneratePartitionKey(partnerId, phone),
-                Code = generateRealCode ? randomCode : GetDefaultCode(codeLength),
+                Code = generateRealCode ? _randomValueGenerator.GetInt(1, 9999).ToString("0000") : "0000",
                 CreationDateTime = creationDt
             };
         }
 
         public SmsVerificationPriorityCodeEntity CreateSmsVerificationPriorityCode(string phone, string partnerId,
-            DateTime expirationDt, int codeLength = 6)
+            DateTime expirationDt)
         {
             var creationDt = _dateTimeProvider.GetDateTime();
-            var randomCode = _randomValueGenerator.GetCode(codeLength).ToString();
             return new SmsVerificationPriorityCodeEntity
             {
                 RowKey = SmsVerificationCodeEntity.GenerateRowKey(creationDt),
                 PartitionKey = SmsVerificationCodeEntity.GeneratePartitionKey(partnerId, phone),
-                Code = randomCode,
+                Code = _randomValueGenerator.GetInt(1, 9999).ToString("0000"),
                 CreationDateTime = creationDt,
                 ExpirationDate = expirationDt
             };
-        }
-
-        protected string GetDefaultCode(int codeLength)
-        {
-            if (codeLength == 0) codeLength = 6;
-            if (codeLength < 4) codeLength = 4;
-            if (codeLength > 16) codeLength = 16;
-
-            var length = 0;
-            var codemask = string.Empty;
-            while (codeLength > length)
-            {
-                codemask += "0";
-                length++;
-            }
-            return codemask;
         }
     }
 }

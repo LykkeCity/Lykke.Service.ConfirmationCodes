@@ -25,17 +25,17 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
             _manualCodesStorage = manualCodesStorage;
         }
 
-        public async Task<ISmsVerificationCode> CreateAsync(string partnerId, string phoneNum, bool generateRealCode, int codeLength)
+        public async Task<ISmsVerificationCode> CreateAsync(string partnerId, string phoneNum, bool generateRealCode)
         {
-            var entity = _smsVerificationCodeFactory.CreateSmsVerificationCode(phoneNum, partnerId, generateRealCode, codeLength);
+            var entity = _smsVerificationCodeFactory.CreateSmsVerificationCode(phoneNum, partnerId, generateRealCode);
             await _tableStorage.InsertAsync(entity);
             return entity;
         }
 
         public async Task<ISmsVerificationCode> CreatePriorityAsync(string partnerId, string phoneNum,
-            DateTime expirationDt, int codeLength)
+            DateTime expirationDt)
         {
-            var entity = _smsVerificationCodeFactory.CreateSmsVerificationPriorityCode(phoneNum, partnerId, expirationDt, codeLength);
+            var entity = _smsVerificationCodeFactory.CreateSmsVerificationPriorityCode(phoneNum, partnerId, expirationDt);
             await _manualCodesStorage.InsertAsync(entity);
             return entity;
         }

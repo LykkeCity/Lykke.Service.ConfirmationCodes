@@ -40,10 +40,8 @@ namespace Lykke.Service.ConfirmationCodes.Services
             _supportToolsSettings = supportToolsSettings;
         }
 
-        public async Task<string> RequestSmsCode(string partnerId, string clientId, string phoneNumber, bool isPriority = false, int expirationInterval = 0, int codeLength = 6)
+        public async Task<string> RequestSmsCode(string partnerId, string clientId, string phoneNumber, bool isPriority = false)
         {
-            DateTime expDate;
-
             var callHistory =
                 await _callTimeLimitsRepository.GetCallHistoryAsync(GetMethodName, clientId, _repeatCallsTimeSpan);
 
@@ -64,17 +62,13 @@ namespace Lykke.Service.ConfirmationCodes.Services
                 //todo: refactor if
                 if (isPriority)
                 {
-                    if (expirationInterval != 0 && expirationInterval <= _supportToolsSettings.PriorityCodeExpirationInterval)
-                        expDate = DateTime.UtcNow.AddSeconds(expirationInterval);
-                    else
-                        expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
-
-                    smsCode = await _smsVerificationCodeRepository.CreatePriorityAsync(partnerId, phoneNumber, expDate, codeLength);
+                    var expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
+                    smsCode = await _smsVerificationCodeRepository.CreatePriorityAsync(partnerId, phoneNumber, expDate);
                 }
                 else
                 {
                     smsCode = await _smsVerificationCodeRepository.CreateAsync(partnerId, phoneNumber,
-                        _deploymentSettings.IsProduction, codeLength);
+                        _deploymentSettings.IsProduction);
                 }
 
                 await _smsRequestProducer.SendSmsAsync(partnerId, phoneNumber,
@@ -86,24 +80,19 @@ namespace Lykke.Service.ConfirmationCodes.Services
             return null;
         }
 
-        public async Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority = false, int expirationInterval = 0, int codeLength = 6)
+        public async Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority = false)
         {
             ISmsVerificationCode smsCode;
-            DateTime expDate;
             //todo: refactor if
             if (isPriority)
             {
-                if (expirationInterval != 0 && expirationInterval <= _supportToolsSettings.PriorityCodeExpirationInterval)
-                    expDate = DateTime.UtcNow.AddSeconds(expirationInterval);
-                else
-                    expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
-
-                smsCode = await _smsVerificationCodeRepository.CreatePriorityAsync(partnerId, phoneNumber, expDate, codeLength);
+                var expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
+                smsCode = await _smsVerificationCodeRepository.CreatePriorityAsync(partnerId, phoneNumber, expDate);
             }
             else
             {
                 smsCode = await _smsVerificationCodeRepository.CreateAsync(partnerId, phoneNumber,
-                    _deploymentSettings.IsProduction, codeLength);
+                    _deploymentSettings.IsProduction);
             }
 
             await _smsRequestProducer.SendSmsAsync(partnerId, phoneNumber,

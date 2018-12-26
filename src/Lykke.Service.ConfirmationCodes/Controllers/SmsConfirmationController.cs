@@ -28,7 +28,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]        
         public async Task<IActionResult> Post([FromBody]SendSmsConfirmationRequest model)
         {
-            await _confirmationCodesService.RequestSmsCode(model.PartnerId, model.Phone, model.IsPriority, model.CodeLength);
+            await _confirmationCodesService.RequestSmsCode(model.PartnerId, model.Phone, model.IsPriority);
 
             return Ok();
         }
@@ -46,7 +46,6 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         public async Task<IActionResult> VerifyCode([FromBody]VerifySmsConfirmationRequest model)
         {
             var isValid = await _confirmationCodesService.CheckAsync(model.PartnerId, model.Phone, model.Code);
-            if (isValid) await _confirmationCodesService.DeleteCodes(model.PartnerId, model.Phone);
 
             return Ok(new VerificationResult{IsValid = isValid });
         }
