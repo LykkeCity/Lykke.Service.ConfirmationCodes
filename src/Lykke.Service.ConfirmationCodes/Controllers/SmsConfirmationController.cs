@@ -19,13 +19,14 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         {
             _confirmationCodesService = confirmationCodesService;
         }
+
         /// <summary>
         /// Generates code and sends it to specified phone number using SMS. Code will be persisted.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [SwaggerOperation("Post")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]        
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> Post([FromBody]SendSmsConfirmationRequest model)
         {
             await _confirmationCodesService.RequestSmsCode(model.PartnerId, model.Phone, model.IsPriority);
@@ -42,7 +43,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         [HttpPost]
         [SwaggerOperation("VerifyCode")]
         [Route("VerifyCode")]
-        [ProducesResponseType(typeof(VerificationResult), (int)HttpStatusCode.OK)]        
+        [ProducesResponseType(typeof(VerificationResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> VerifyCode([FromBody]VerifySmsConfirmationRequest model)
         {
             var isValid = await _confirmationCodesService.CheckAsync(model.PartnerId, model.Phone, model.Code);
