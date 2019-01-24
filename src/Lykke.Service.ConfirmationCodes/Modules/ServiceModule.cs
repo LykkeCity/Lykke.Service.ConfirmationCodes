@@ -1,6 +1,6 @@
 ﻿using Autofac;
-using Common.Log;
 using Lykke.Messages.Email;
+using Lykke.Sdk;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.ConfirmationCodes.AzureRepositories;
 using Lykke.Service.ConfirmationCodes.Core.Messages;
@@ -21,6 +21,10 @@ namespace Lykke.Service.ConfirmationCodes.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<StartupManager>()
+                .As<IStartupManager>()
+                .SingleInstance();
+
             builder.RegisterModule(new AutofacRepositoriesModule(
                 _appSettings.Nested(x => x.SmsNotifications),
                 _appSettings.Nested(x => x.ConfirmationCodesService.Db.ClientPersonalInfoConnString),

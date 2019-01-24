@@ -26,7 +26,7 @@ namespace Lykke.Service.ConfirmationCodes.Modules
         {
             _sagasRabbitMq = appSettings.Nested(x => x.SagasRabbitMq);
         }
-        
+
         protected override void Load(ContainerBuilder builder)
         {
             string selfRoute = "self";
@@ -59,12 +59,12 @@ namespace Lykke.Service.ConfirmationCodes.Modules
                 })
                 .As<IMessagingEngine>()
                 .SingleInstance();
-            
+
             builder.Register(ctx =>
                 {
                     var logFactory = ctx.Resolve<ILogFactory>();
                     
-                    return new CqrsEngine(logFactory,
+                    var engine = new CqrsEngine(logFactory,
                         ctx.Resolve<IDependencyResolver>(),
                         ctx.Resolve<IMessagingEngine>(),
                         new DefaultEndpointProvider(),
@@ -83,6 +83,8 @@ namespace Lykke.Service.ConfirmationCodes.Modules
                                 typeof(ConfirmationValidationFailedEvent))
                             .With(eventsRoute)
                     );
+                    engine.StartPublishers();
+                    return engine;
                 })
                 .As<ICqrsEngine>()
                 .SingleInstance()
