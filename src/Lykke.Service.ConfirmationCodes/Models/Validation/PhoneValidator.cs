@@ -12,7 +12,7 @@ namespace Lykke.Service.ConfirmationCodes.Models.Validation
         {
             RuleFor(x => x.Phone)
                 .Must(x => !string.IsNullOrWhiteSpace(x) && x.Length >= 8)
-                .WithMessage("Phone can't be empty");
+                .WithMessage("Phone can't be empty and must have at least 8 digits");
         }
     }
 }
