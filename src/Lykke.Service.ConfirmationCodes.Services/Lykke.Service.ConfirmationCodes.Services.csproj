@@ -6,11 +6,9 @@
     <Version>1.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Lykke.AzureStorage" Version="8.10.0" />
-    <PackageReference Include="Lykke.Common" Version="7.0.3" />
     <PackageReference Include="Lykke.GoogleAuthenticator" Version="1.0.8" />
     <PackageReference Include="Lykke.Messages" Version="1.9.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.0.513" />
+    <PackageReference Include="StackExchange.Redis" Version="2.0.519" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lykke.Service.ConfirmationCodes.AzureRepositories\Lykke.Service.ConfirmationCodes.AzureRepositories.csproj" />
