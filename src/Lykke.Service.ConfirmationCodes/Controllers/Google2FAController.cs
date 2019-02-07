@@ -8,6 +8,7 @@ using Lykke.Service.ConfirmationCodes.Client.Models.Response;
 using Lykke.Service.ConfirmationCodes.Core.Exceptions;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 using Lykke.Service.ConfirmationCodes.Services;
+using Lykke.Service.ConfirmationCodes.Settings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lykke.Service.ConfirmationCodes.Controllers
@@ -19,12 +20,16 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         private readonly IGoogle2FaService _google2FaService;
         private readonly IGoogle2FaBlacklistService _blacklistService;
         private readonly ILog _log;
-        
+        private readonly ConfirmationCodesServiceSettings _confirmationCodesServiceSettings;
+
         public Google2FAController(
             IGoogle2FaService google2FaService,
             IGoogle2FaBlacklistService blacklistService,
-            ILogFactory log)
+            ILogFactory log,
+            ConfirmationCodesServiceSettings confirmationCodesServiceSettings
+            )
         {
+            _confirmationCodesServiceSettings = confirmationCodesServiceSettings;
             _google2FaService = google2FaService;
             _blacklistService = blacklistService;
             _log = log.CreateLog(this);
@@ -42,6 +47,9 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 {
                     throw new Google2FaAlreadySetException(model.ClientId, "Cannot set up 2FA because it's already set up");
                 }
+
+                if (_confirmationCodesServiceSettings.Google2FaSetupDisabled)
+                    throw new Exception("Google 2FA setup is disabled");
 
                 var manualEntryKey = await _google2FaService.CreateAsync(model.ClientId);
 

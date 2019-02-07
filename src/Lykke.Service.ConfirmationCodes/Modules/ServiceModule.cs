@@ -40,6 +40,8 @@ namespace Lykke.Service.ConfirmationCodes.Modules
             builder.RegisterType<QueueSmsRequestProducer>().As<ISmsRequestProducer>().SingleInstance();
             builder.RegisterEmailSenderViaAzureQueueMessageProducer(_appSettings.Nested(x => x.ConfirmationCodesService.Db.ClientPersonalInfoConnString));
             builder.RegisterLykkeServiceClient(_appSettings.CurrentValue.ClientAccountServiceClient.ServiceUrl);
+
+            builder.RegisterInstance(_appSettings.CurrentValue.ConfirmationCodesService).AsSelf();
         }
     }
 }
