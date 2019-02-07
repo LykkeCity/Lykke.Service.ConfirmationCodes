@@ -20,6 +20,8 @@ ConfirmationCodesService:
             settings-key: ConfirmationCodesService-PriorityCodeExpirationInterval
     Google2FaConfirmationMaxTries:
         settings-key: ConfirmationCodesService-Google2FaConfirmationMaxTries
+    Google2FaSetupDisabled:
+        settings-key: ConfirmationCodesService-Google2FaSetupDisabled
 
 ClientAccountServiceClient:
     ServiceUrl:
