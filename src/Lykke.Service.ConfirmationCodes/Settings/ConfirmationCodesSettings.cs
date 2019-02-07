@@ -9,5 +9,6 @@ namespace Lykke.Service.ConfirmationCodes.Settings
         public DeploymentSettings DeploymentSettings { get; set; }
         public SupportToolsSettings SupportToolsSettings { get; set; }
         public int Google2FaConfirmationMaxTries { get; set; }
+        public bool Google2FaSetupDisabled { get; set; }
     }
 }
