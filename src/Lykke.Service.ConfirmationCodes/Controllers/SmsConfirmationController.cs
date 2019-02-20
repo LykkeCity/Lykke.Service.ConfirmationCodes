@@ -1,11 +1,17 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Lykke.Service.ConfirmationCodes.Client.Models.Request;
 using Lykke.Service.ConfirmationCodes.Client.Models.Response;
+using Lykke.Service.ConfirmationCodes.Core.Entities;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 using Lykke.Service.ConfirmationCodes.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Common;
+using Lykke.Service.ConfirmationCodes.Contract;
+using Lykke.Service.ConfirmationCodes.Core.Exceptions;
+using CallLimitStatus = Lykke.Service.ConfirmationCodes.Contract.Models.CallLimitStatus;
 
 namespace Lykke.Service.ConfirmationCodes.Controllers
 {
@@ -25,6 +31,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Obsolete("Use SmsConfirmCode instead")]
         [SwaggerOperation("Post")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> Post([FromBody]SendSmsConfirmationRequest model)
@@ -32,6 +39,28 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             await _confirmationCodesService.RequestSmsCode(model.PartnerId, model.Phone, model.IsPriority);
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Generates code and sends it to specified phone number using SMS. Code will be persisted.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("SmsConfirmCode")]
+        [SwaggerOperation("SmsConfirmCode")]
+        [ProducesResponseType(typeof(SmsConfirmationResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> SmsConfirmCode([FromBody]SmsConfirmCodeRequest model)
+        {
+            SmsRequestResult result = await _confirmationCodesService.RequestSmsCode(new SmsCodeRequest
+                {
+                    ClientId = model.ClientId,
+                    PhoneNumber = model.Phone,
+                    Operation = model.Operation
+                });
+
+            return Ok(new SmsConfirmationResponse
+            {
+                Status = result.Status.ToString().ParseEnum<CallLimitStatus>()
+            });
         }
 
         /// <summary>
@@ -49,6 +78,26 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             var isValid = await _confirmationCodesService.CheckAsync(model.PartnerId, model.Phone, model.Code);
 
             return Ok(new VerificationResult{IsValid = isValid });
+        }
+        
+        /// <summary>
+        /// Verifies code for specified phone number with operation lockout.
+        /// </summary>
+        /// <returns>
+        /// VerificationResult
+        /// </returns>
+        [HttpPost]
+        [SwaggerOperation("VerifySmsCode")]
+        [Route("VerifySmsCode")]
+        [ProducesResponseType(typeof(VerificationResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> VerifyCodeWithLockout([FromBody]CheckSmsCodeRequest model)
+        {
+            SmsCheckResult checkResult = await _confirmationCodesService.CheckSmsAsync(model.ClientId, model.Phone, model.Code, ConfirmOperations.Google2FaSmsConfirm);
+
+            if (checkResult.Status == Core.Entities.CallLimitStatus.LimitExceed)
+                throw new Google2FaTooManyAttemptsException(model.ClientId, "Client has exceeded maximum consecutive failed verification attempts");
+            
+            return Ok(new VerificationResult{IsValid = checkResult.Result });
         }
 
         /// <summary>

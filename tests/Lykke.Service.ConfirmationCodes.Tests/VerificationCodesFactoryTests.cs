@@ -16,7 +16,8 @@ namespace Lykke.Service.ConfirmationCodes.Tests
         public VerificationCodesFactoryTests()
         {
             _generator = new Mock<IRandomValueGenerator>();
-            _generator.Setup(x => x.GetInt(It.IsAny<int>(), It.IsAny<int>())).Returns(1);
+            _generator.Setup(x => x.GetCode(It.IsAny<int>(), true)).Returns("0001");
+            _generator.Setup(x => x.GetCode(It.IsAny<int>(), false)).Returns("0000");
 
             _dateTimeProvider = new Mock<IDateTimeProvider>();
             _dateTimeProvider.Setup(x => x.GetDateTime()).Returns(_currentDateTime);
@@ -96,7 +97,7 @@ namespace Lykke.Service.ConfirmationCodes.Tests
 
             var code = _factory.CreateEmailVerificationCode(email, partnerId, generateRealCode);
 
-            _generator.Verify(x => x.GetInt(1, 9999), Times.Once);
+            _generator.Verify(x => x.GetCode(4, generateRealCode), Times.Once);
         }
 
         [Fact]
@@ -105,7 +106,7 @@ namespace Lykke.Service.ConfirmationCodes.Tests
             var email = "email";
             var partnerId = "partnerId";
             var generateRealCode = true;
-            _generator.Setup(x => x.GetInt(1, 9999)).Returns(1);
+            _generator.Setup(x => x.GetCode(4, generateRealCode)).Returns("0001");
 
             var code = _factory.CreateEmailVerificationCode(email, partnerId, generateRealCode);
 
@@ -184,7 +185,7 @@ namespace Lykke.Service.ConfirmationCodes.Tests
 
             var code = _factory.CreateEmailVerificationPriorityCode(email, partnerId, expiration);
 
-            _generator.Verify(x => x.GetInt(1, 9999), Times.Once);
+            _generator.Verify(x => x.GetCode(4, true), Times.Once);
         }
 
         [Fact]
@@ -259,7 +260,7 @@ namespace Lykke.Service.ConfirmationCodes.Tests
 
             var code = _factory.CreateSmsVerificationCode(phone, partnerId, generateRealCode);
 
-            _generator.Verify(x => x.GetInt(1, 9999), Times.Once);
+            _generator.Verify(x => x.GetCode(4, generateRealCode), Times.Once);
         }
 
         [Fact]
@@ -345,7 +346,7 @@ namespace Lykke.Service.ConfirmationCodes.Tests
 
             var code = _factory.CreateSmsVerificationPriorityCode(phone, partnerId, expiration);
 
-            _generator.Verify(x => x.GetInt(1, 9999), Times.Once);
+            _generator.Verify(x => x.GetCode(4, true), Times.Once);
         }
 
         [Fact]
