@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.ConfirmationCodes.Core.Entities;
-using Lykke.Service.ConfirmationCodes.Core.Heplers;
 using Lykke.Service.ConfirmationCodes.Core.Messages;
 using Lykke.Service.ConfirmationCodes.Core.Repositories;
 using Lykke.Service.ConfirmationCodes.Core.Services;
@@ -15,69 +14,62 @@ namespace Lykke.Service.ConfirmationCodes.Services
         private readonly ISmsVerificationCodeRepository _smsVerificationCodeRepository;
         private readonly ISmsRequestProducer _smsRequestProducer;        
         private readonly ISupportToolsSettings _supportToolsSettings;
-        private readonly ICallTimeLimitsRepository _callTimeLimitsRepository;
+        private readonly ICallTimeLimitsService _callTimeLimitsService;
         private readonly IClientAccountClient _clientAccountService;
         private readonly IDeploymentSettings _deploymentSettings;
-        
-        private const string GetMethodName = "ConfirmationCodesService.RequestSmsCode";
-        private readonly TimeSpan _repeatCallsTimeSpan = TimeSpan.FromMinutes(5);
-        private readonly TimeSpan _repeatEnabledTimeSpan = TimeSpan.FromSeconds(45);
-        private int _callLimit = 2;
 
         public ConfirmationCodesService(ISmsVerificationCodeRepository smsVerificationCodeRepository,
             ISmsRequestProducer smsRequestProducer,
-            ICallTimeLimitsRepository callTimeLimitsRepository,
+            ICallTimeLimitsService callTimeLimitsService,
             IClientAccountClient clientAccountService,
-            IDeploymentSettings deploymentSettings, 
+            IDeploymentSettings deploymentSettings,
             ISupportToolsSettings supportToolsSettings)
         {
             _smsVerificationCodeRepository = smsVerificationCodeRepository;
             _smsRequestProducer = smsRequestProducer;            
 
-            _callTimeLimitsRepository = callTimeLimitsRepository;
+            _callTimeLimitsService = callTimeLimitsService;
             _clientAccountService = clientAccountService;
             _deploymentSettings = deploymentSettings;            
             _supportToolsSettings = supportToolsSettings;
         }
 
-        public async Task<string> RequestSmsCode(string partnerId, string clientId, string phoneNumber, bool isPriority = false)
+        public async Task<SmsRequestResult> RequestSmsCode(SmsCodeRequest request)
         {
-            var callHistory =
-                await _callTimeLimitsRepository.GetCallHistoryAsync(GetMethodName, clientId, _repeatCallsTimeSpan);
+            var callLimitsResult = await _callTimeLimitsService.ProcessCallLimitsAsync(request.ClientId, request.Operation);
 
-            if (!callHistory.Any() || callHistory.IsCallEnabled(_repeatEnabledTimeSpan, _callLimit))
+            if (callLimitsResult.Status != CallLimitStatus.Allowed)
             {
-                await _callTimeLimitsRepository.InsertRecordAsync(GetMethodName, clientId);
-
-                var smsSettings = await _clientAccountService.GetSmsAsync(clientId);
-
-                //if there were some precedent calls in prev. 5 mins - we should try another SMS provider
-                var useAlternativeProvider = callHistory.Any()
-                    ? !smsSettings.UseAlternativeProvider
-                    : smsSettings.UseAlternativeProvider;
-
-                await _clientAccountService.SetSmsAsync(clientId, useAlternativeProvider);
-
-                ISmsVerificationCode smsCode;
-                //todo: refactor if
-                if (isPriority)
-                {
-                    var expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
-                    smsCode = await _smsVerificationCodeRepository.CreatePriorityAsync(partnerId, phoneNumber, expDate);
-                }
-                else
-                {
-                    smsCode = await _smsVerificationCodeRepository.CreateAsync(partnerId, phoneNumber,
-                        _deploymentSettings.IsProduction);
-                }
-
-                await _smsRequestProducer.SendSmsAsync(partnerId, phoneNumber,
-                        new SmsConfirmationData { ConfirmationCode = smsCode.Code },
-                        smsSettings.UseAlternativeProvider);
-                return smsCode.Code;
+                return SmsRequestResult.FailedResult(callLimitsResult.Status);
             }
 
-            return null;
+            var smsSettings = await _clientAccountService.GetSmsAsync(request.ClientId);
+
+            //if there were some precedent calls in prev. 5 mins - we should try another SMS provider
+            var useAlternativeProvider = callLimitsResult.CallDates.Any()
+                ? !smsSettings.UseAlternativeProvider
+                : smsSettings.UseAlternativeProvider;
+
+            await _clientAccountService.SetSmsAsync(request.ClientId, useAlternativeProvider);
+
+            ISmsVerificationCode smsCode;
+            //todo: refactor if
+            if (request.IsPriority)
+            {
+                var expDate = DateTime.UtcNow.AddSeconds(_supportToolsSettings.PriorityCodeExpirationInterval);
+                smsCode = await _smsVerificationCodeRepository.CreatePriorityAsync(request.PartnerId, request.PhoneNumber, expDate);
+            }
+            else
+            {
+                smsCode = await _smsVerificationCodeRepository.CreateAsync(request.PartnerId, request.PhoneNumber,
+                    _deploymentSettings.IsProduction);
+            }
+
+            await _smsRequestProducer.SendSmsAsync(request.PartnerId, request.PhoneNumber,
+                new SmsConfirmationData { ConfirmationCode = smsCode.Code },
+                smsSettings.UseAlternativeProvider);
+
+            return SmsRequestResult.SuccessResult(smsCode.Code);
         }
 
         public async Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority = false)
@@ -104,6 +96,22 @@ namespace Lykke.Service.ConfirmationCodes.Services
         public async Task<bool> CheckAsync(string partnerId, string mobilePhone, string code)
         {
             return await _smsVerificationCodeRepository.CheckAsync(partnerId, mobilePhone, code);
+        }
+        
+        public async Task<SmsCheckResult> CheckSmsAsync(string clientId, string mobilePhone, string code, string operation)
+        {
+            var result = new SmsCheckResult();
+            
+            var callLimitsResult = await _callTimeLimitsService.ProcessCallLimitsAsync(clientId, operation, false);
+    
+            if (callLimitsResult.Status != CallLimitStatus.Allowed)
+            {
+                result.Status = callLimitsResult.Status;
+                return result;
+            }
+            
+            result.Result = await _smsVerificationCodeRepository.CheckAsync(null, mobilePhone, code);
+            return result;
         }
 
         public async Task<ISmsVerificationPriorityCode> GetPriorityCode(string partnerId, string mobilePhone)
