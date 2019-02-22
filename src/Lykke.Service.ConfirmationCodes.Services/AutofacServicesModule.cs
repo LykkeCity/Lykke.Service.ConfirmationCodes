@@ -29,6 +29,8 @@ namespace Lykke.Service.ConfirmationCodes.Services
             builder.RegisterType<Google2FaBlacklistService>()
                 .AsImplementedInterfaces()
                 .WithParameter("maxTries", _google2FaMaxTries);
+            
+            builder.RegisterType<CallTimeLimitsService>().AsImplementedInterfaces();
         }
     }
 }

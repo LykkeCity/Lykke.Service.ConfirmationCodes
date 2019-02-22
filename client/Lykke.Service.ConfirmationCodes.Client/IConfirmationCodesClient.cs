@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Service.ConfirmationCodes.Client.Models.Request;
 using Lykke.Service.ConfirmationCodes.Client.Models.Response;
@@ -41,13 +42,26 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// Sends confirmation code via sms
         /// </summary>
         [Post("/api/SmsConfirmation")]
+        [Obsolete("Use SendSmsConfirmCodeAsync instead")]
         Task SendSmsConfirmationAsync([Body] SendSmsConfirmationRequest model);
+        
+        /// <summary>
+        /// Sends confirmation code via sms
+        /// </summary>
+        [Post("/api/SmsConfirmation/SmsConfirmCode")]
+        Task<SmsConfirmationResponse> SendSmsConfirmCodeAsync([Body] SmsConfirmCodeRequest model);
 
         /// <summary>
         /// Checks if code is valid
         /// </summary>
         [Post("/api/SmsConfirmation/VerifyCode")]
         Task<VerificationResult> VerifySmsCodeAsync([Body] VerifySmsConfirmationRequest model);
+        
+        /// <summary>
+        /// Checks if code is valid with operation lockout
+        /// </summary>
+        [Post("/api/SmsConfirmation/VerifySmsCode")]
+        Task<VerificationResult> VerifySmsCodeWithLockoutAsync([Body] CheckSmsCodeRequest model);
 
         /// <summary>
         /// Returns last code
@@ -71,7 +85,14 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// Verifies that Google 2FA setup was successful by checking the code
         /// </summary>
         [Put("/api/Google2FA/Setup")]
+        [Obsolete("Will be removed. Use Google2FaVerifySetupBySmsAsync with sms confirmation")]
         Task<VerifySetupGoogle2FaResponse> Google2FaVerifySetupAsync([Body] VerifySetupGoogle2FaRequest model);
+        
+        /// <summary>
+        /// Verifies that Google 2FA setup was successful by checking the sms code
+        /// </summary>
+        [Put("/api/Google2FA/SetupBySms")]
+        Task<VerifySetupGoogle2FaResponse> Google2FaVerifySetupBySmsAsync([Body] VerifySetupGoogle2FaBySmsRequest model);
 
         /// <summary>
         /// Checks if user has Google 2FA set up
@@ -86,6 +107,12 @@ namespace Lykke.Service.ConfirmationCodes.Client
         Task<bool> Google2FaCheckCodeAsync([Query] string clientId, [Query] string code);
         
         /// <summary>
+        /// Checks code entered by user for activation
+        /// </summary>
+        [Get("/api/Google2FA/CheckCodeForSetup")]
+        Task<bool> Google2FaCheckCodeForSetupAsync([Query] string clientId, [Query] string code);
+        
+        /// <summary>
         /// Check if user is blacklisted
         /// </summary>
         [Get("/api/Google2FA/Blacklist")]
@@ -96,5 +123,17 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// </summary>
         [Get("/api/IsAlive")]
         Task<IsAliveResponse> IsAlive([Query] SmsConfirmationRequest model);
+        
+        /// <summary>
+        /// Gets calls count for specified operation
+        /// </summary>
+        [Post("/api/CallTimeLimits/count")]
+        Task<CallsCountResponse> GetCallsCountAsync([Body] CallsCountRequest model);
+        
+        /// <summary>
+        /// Gets calls count for specified operation
+        /// </summary>
+        [Post("/api/CallTimeLimits/clear")]
+        Task ClearCallsCountAsync([Body] ClearCallsCountRequest model);
     }
 }
