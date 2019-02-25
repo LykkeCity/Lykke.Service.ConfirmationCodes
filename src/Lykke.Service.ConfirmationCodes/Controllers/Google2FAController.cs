@@ -128,18 +128,37 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 {
                     throw new Google2FaNoSetupInProgressException(model.ClientId, "No 2FA setup is in progress");
                 }
+                
+                if (await _blacklistService.IsClientBlockedAsync(model.ClientId))
+                {
+                    throw new Google2FaTooManyAttemptsException(model.ClientId, "Client has exceeded maximum consecutive failed 2FA code verification attempts");
+                }
 
                 var checkResult = await _confirmationCodesService.CheckSmsAsync(model.ClientId, model.Phone,
                     model.SmsCode, ConfirmOperations.Google2FaSmsConfirm);
                 
                 if (checkResult.Status == CallLimitStatus.LimitExceed)
-                    throw new Google2FaTooManyAttemptsException(model.ClientId, "Too many attempts");
+                    throw new Google2FaTooManyAttemptsException(model.ClientId, "Client has exceeded maximum consecutive failed sms verification attempts");
                 
                 if (checkResult.Status == CallLimitStatus.Allowed && checkResult.Result)
                 {
-                    await _google2FaService.ActivateAsync(model.ClientId);
+                    var codeIsValid = await _google2FaService.CheckCodeAsync(model.ClientId, model.GaCode, true);
 
-                    return Ok(new VerifySetupGoogle2FaResponse {IsValid = true});
+                    if (codeIsValid)
+                    {
+                        await _blacklistService.ClientSucceededAsync(model.ClientId);
+                    }
+                    else
+                    {
+                        await _blacklistService.ClientFailedAsync(model.ClientId);
+                    }
+
+                    if (checkResult.Result && codeIsValid)
+                    {
+                        await _google2FaService.ActivateAsync(model.ClientId);
+
+                        return Ok(new VerifySetupGoogle2FaResponse {IsValid = true});
+                    }
                 }
 
                 return Ok(new VerifySetupGoogle2FaResponse {IsValid = false});
@@ -150,9 +169,10 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
 
                 switch (exception)
                 {
-                    case Google2FaAlreadySetException _:
-                    case Google2FaNoSetupInProgressException _:
-                        return BadRequest();
+                    case Google2FaAlreadySetException alreadyEx:
+                        return BadRequest(alreadyEx.Message);
+                    case Google2FaNoSetupInProgressException inProgressEx:
+                        return BadRequest(inProgressEx.Message);
                     case Google2FaTooManyAttemptsException _:
                         return StatusCode(403);
                     default:

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Lykke.GoogleAuthenticator;
-using Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories;
 using Lykke.Service.ConfirmationCodes.Core.Repositories;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 
@@ -49,23 +48,15 @@ namespace Lykke.Service.ConfirmationCodes.Services
         public async Task<string> CreateAsync(string clientId)
         {
             var entity = await _google2FaRepository.GetAsync(clientId);
-
-            string secret;
             
-            if (entity != null)
-            {
-                if (entity.IsActive)
-                    throw new InvalidOperationException($"Cannot create a new record for {clientId}, there already is an active record");
+            if(entity != null && entity.IsActive)
+                throw new InvalidOperationException($"Cannot create a new record for {clientId}, there already is an active record");
 
-                secret = entity.Secret;
-            }
-            else
-            {
-                secret = Guid.NewGuid() + "_" + clientId;
-                await _google2FaRepository.InsertOrUpdateAsync(clientId, secret);
-            }
+            var newSecret = Guid.NewGuid() + "_" + clientId;
+
+            await _google2FaRepository.InsertOrUpdateAsync(clientId, newSecret);
             
-            var setupInfo = new TwoFactorAuthenticator().GenerateSetupCode(_appName, clientId, secret, _qrSideLength, _qrSideLength, true);
+            var setupInfo = new TwoFactorAuthenticator().GenerateSetupCode(_appName, clientId, newSecret, _qrSideLength, _qrSideLength, true);
 
             return setupInfo.ManualEntryKey;
         }
