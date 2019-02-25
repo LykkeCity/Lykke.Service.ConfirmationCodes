@@ -49,15 +49,8 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             try
             {
                 if (await _google2FaService.ClientHasEnabledAsync(model.ClientId))
-                {
                     throw new Google2FaAlreadySetException(model.ClientId, "Cannot set up 2FA because it's already set up");
-                }
                 
-                if (await _google2FaService.ClientHasPendingAsync(model.ClientId))
-                {
-                    throw new Google2FaSetupInProgressException(model.ClientId, "2FA setup is already in progress");
-                }
-
                 if (_confirmationCodesServiceSettings.Google2FaSetupDisabled)
                     throw new Exception("Google 2FA setup is disabled");
 
@@ -73,8 +66,6 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 {
                     case Google2FaAlreadySetException _:
                         return BadRequest();
-                    case Google2FaSetupInProgressException _:
-                        return StatusCode(403);
                 }
                 
                 throw;
