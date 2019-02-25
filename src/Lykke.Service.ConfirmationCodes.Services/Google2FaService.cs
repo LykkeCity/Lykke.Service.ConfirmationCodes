@@ -49,15 +49,23 @@ namespace Lykke.Service.ConfirmationCodes.Services
         public async Task<string> CreateAsync(string clientId)
         {
             var entity = await _google2FaRepository.GetAsync(clientId);
-            
-            if(entity != null && entity.IsActive)
-                throw new InvalidOperationException($"Cannot create a new record for {clientId}, there already is an active record");
 
-            var newSecret = Guid.NewGuid() + "_" + clientId;
-
-            await _google2FaRepository.InsertOrUpdateAsync(clientId, newSecret);
+            string secret;
             
-            var setupInfo = new TwoFactorAuthenticator().GenerateSetupCode(_appName, clientId, newSecret, _qrSideLength, _qrSideLength, true);
+            if (entity != null)
+            {
+                if (entity.IsActive)
+                    throw new InvalidOperationException($"Cannot create a new record for {clientId}, there already is an active record");
+
+                secret = entity.Secret;
+            }
+            else
+            {
+                secret = Guid.NewGuid() + "_" + clientId;
+                await _google2FaRepository.InsertOrUpdateAsync(clientId, secret);
+            }
+            
+            var setupInfo = new TwoFactorAuthenticator().GenerateSetupCode(_appName, clientId, secret, _qrSideLength, _qrSideLength, true);
 
             return setupInfo.ManualEntryKey;
         }
