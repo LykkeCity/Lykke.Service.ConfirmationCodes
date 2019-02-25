@@ -148,10 +148,16 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             {
                 _log.WriteError(nameof(VerifySetupBySms), new { model.ClientId }, exception);
 
-                if (exception is Google2FaTooManyAttemptsException)
-                    return StatusCode(403);
-                
-                throw;
+                switch (exception)
+                {
+                    case Google2FaAlreadySetException _:
+                    case Google2FaNoSetupInProgressException _:
+                        return BadRequest();
+                    case Google2FaTooManyAttemptsException _:
+                        return StatusCode(403);
+                    default:
+                        throw;
+                }
             }
         }
 
@@ -259,7 +265,8 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 
                 switch (exception)
                 {
-                    case Google2FaNotSetUpException _:
+                    case Google2FaAlreadySetException _:
+                    case Google2FaNoSetupInProgressException _:
                         return BadRequest();
                     case Google2FaTooManyAttemptsException _:
                         return StatusCode(403);
