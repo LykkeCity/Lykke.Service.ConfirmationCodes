@@ -74,48 +74,9 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
 
         [HttpPut]
         [Route("Setup")]
-        [Obsolete("Will be removed. Use SetupBySms with sms confirmation")]
         [ProducesResponseType(typeof(VerifySetupGoogle2FaResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(void), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> VerifySetup([FromBody] VerifySetupGoogle2FaRequest model)
-        {
-            try
-            {
-                if (await _google2FaService.ClientHasEnabledAsync(model.ClientId))
-                {
-                    throw new Google2FaAlreadySetException(model.ClientId, "Cannot set up 2FA because it's already set up");
-                }
-
-                if (!await _google2FaService.ClientHasPendingAsync(model.ClientId))
-                {
-                    throw new Google2FaNoSetupInProgressException(model.ClientId, "No 2FA setup is in progress");
-                }
-
-                if (await _google2FaService.CheckCodeAsync(model.ClientId, model.Code, true))
-                {
-                    await _google2FaService.ActivateAsync(model.ClientId);
-
-                    return Ok(new VerifySetupGoogle2FaResponse {IsValid = true});
-                }
-
-                return Ok(new VerifySetupGoogle2FaResponse {IsValid = false});
-            }
-            catch (Exception exception)
-            {
-                _log.WriteError(nameof(VerifySetup), new { model.ClientId }, exception);
-
-                if (exception is Google2FaAlreadySetException || exception is Google2FaNoSetupInProgressException)
-                    return BadRequest();
-                
-                throw;
-            }
-        }
-        
-        [HttpPut]
-        [Route("SetupBySms")]
-        [ProducesResponseType(typeof(VerifySetupGoogle2FaResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(void), (int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> VerifySetupBySms([FromBody] VerifySetupGoogle2FaBySmsRequest model)
         {
             try
             {
@@ -165,7 +126,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             }
             catch (Exception exception)
             {
-                _log.WriteError(nameof(VerifySetupBySms), new { model.ClientId }, exception);
+                _log.WriteError(nameof(VerifySetup), new { model.ClientId }, exception);
 
                 switch (exception)
                 {
@@ -235,58 +196,6 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 switch (exception)
                 {
                     case Google2FaNotSetUpException _:
-                        return BadRequest();
-                    case Google2FaTooManyAttemptsException _:
-                        return StatusCode(403);
-                }
-
-                throw;
-            }
-        }
-        
-        [HttpGet]
-        [Route("CheckCodeForSetup")]
-        [ProducesResponseType(typeof(bool), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> Check2FaCodeForSetup([FromQuery] string clientId, [FromQuery] string code)
-        {
-            try
-            {
-                if (await _google2FaService.ClientHasEnabledAsync(clientId))
-                {
-                    throw new Google2FaAlreadySetException(clientId, "Cannot set up 2FA because it's already set up");
-                }
-
-                if (!await _google2FaService.ClientHasPendingAsync(clientId))
-                {
-                    throw new Google2FaNoSetupInProgressException(clientId, "No 2FA setup is in progress");
-                }
-                
-                if (await _blacklistService.IsClientBlockedAsync(clientId))
-                {
-                    throw new Google2FaTooManyAttemptsException(clientId, "Client has exceeded maximum consecutive failed verification attempts");
-                }
-                
-                var codeIsValid = await _google2FaService.CheckCodeAsync(clientId, code, true);
-
-                if (codeIsValid)
-                {
-                    await _blacklistService.ClientSucceededAsync(clientId);
-                }
-                else
-                {
-                    await _blacklistService.ClientFailedAsync(clientId);
-                }
-
-                return Ok(codeIsValid);
-            }
-            catch (Exception exception)
-            {
-                _log.WriteError(nameof(Check2FaCodeForSetup), new { clientId }, exception);
-                
-                switch (exception)
-                {
-                    case Google2FaAlreadySetException _:
-                    case Google2FaNoSetupInProgressException _:
                         return BadRequest();
                     case Google2FaTooManyAttemptsException _:
                         return StatusCode(403);

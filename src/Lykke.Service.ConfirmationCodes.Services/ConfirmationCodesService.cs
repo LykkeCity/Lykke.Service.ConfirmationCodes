@@ -100,18 +100,18 @@ namespace Lykke.Service.ConfirmationCodes.Services
         
         public async Task<SmsCheckResult> CheckSmsAsync(string clientId, string mobilePhone, string code, string operation)
         {
-            var result = new SmsCheckResult();
+            var smsCheck = new SmsCheckResult();
             
             var callLimitsResult = await _callTimeLimitsService.ProcessCallLimitsAsync(clientId, operation, false);
     
             if (callLimitsResult.Status != CallLimitStatus.Allowed)
             {
-                result.Status = callLimitsResult.Status;
-                return result;
+                smsCheck.Status = callLimitsResult.Status;
+                return smsCheck;
             }
             
-            result.Result = await _smsVerificationCodeRepository.CheckAsync(null, mobilePhone, code);
-            return result;
+            smsCheck.Result = await _smsVerificationCodeRepository.CheckAsync(null, mobilePhone, code);
+            return smsCheck;
         }
 
         public async Task<ISmsVerificationPriorityCode> GetPriorityCode(string partnerId, string mobilePhone)

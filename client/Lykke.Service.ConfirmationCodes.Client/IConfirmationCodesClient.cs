@@ -82,18 +82,11 @@ namespace Lykke.Service.ConfirmationCodes.Client
         Task<RequestSetupGoogle2FaResponse> Google2FaRequestSetupAsync([Body] RequestSetupGoogle2FaRequest model);
 
         /// <summary>
-        /// Verifies that Google 2FA setup was successful by checking the code
+        /// Verifies that Google 2FA setup was successful by checking the sms code and GA code
         /// </summary>
         [Put("/api/Google2FA/Setup")]
-        [Obsolete("Will be removed. Use Google2FaVerifySetupBySmsAsync with sms confirmation")]
         Task<VerifySetupGoogle2FaResponse> Google2FaVerifySetupAsync([Body] VerifySetupGoogle2FaRequest model);
         
-        /// <summary>
-        /// Verifies that Google 2FA setup was successful by checking the sms code
-        /// </summary>
-        [Put("/api/Google2FA/SetupBySms")]
-        Task<VerifySetupGoogle2FaResponse> Google2FaVerifySetupBySmsAsync([Body] VerifySetupGoogle2FaBySmsRequest model);
-
         /// <summary>
         /// Checks if user has Google 2FA set up
         /// </summary>
@@ -105,12 +98,6 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// </summary>
         [Get("/api/Google2FA/CheckCode")]
         Task<bool> Google2FaCheckCodeAsync([Query] string clientId, [Query] string code);
-        
-        /// <summary>
-        /// Checks code entered by user for activation
-        /// </summary>
-        [Get("/api/Google2FA/CheckCodeForSetup")]
-        Task<bool> Google2FaCheckCodeForSetupAsync([Query] string clientId, [Query] string code);
         
         /// <summary>
         /// Check if user is blacklisted

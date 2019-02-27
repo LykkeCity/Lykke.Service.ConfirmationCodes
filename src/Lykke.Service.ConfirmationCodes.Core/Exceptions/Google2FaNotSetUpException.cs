@@ -6,10 +6,10 @@ namespace Lykke.Service.ConfirmationCodes.Core.Exceptions
     {
         public string ClientId { get; }
         
-        public Google2FaNotSetUpException(string clinetId, string message)
+        public Google2FaNotSetUpException(string clientId, string message)
             : base(message)
         {
-            ClientId = clinetId;
+            ClientId = clientId;
         }
 
         public Google2FaNotSetUpException(string message)
