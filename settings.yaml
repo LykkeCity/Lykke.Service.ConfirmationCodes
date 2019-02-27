@@ -18,6 +18,10 @@ ConfirmationCodesService:
     SupportToolsSettings:
         PriorityCodeExpirationInterval:
             settings-key: ConfirmationCodesService-PriorityCodeExpirationInterval
+        RepeatCallInverval:
+            settings-key: ConfirmationCodesService-RepeatCallInverval
+        CallsLimit:
+            settings-key: ConfirmationCodesService-CallsLimit
     Google2FaConfirmationMaxTries:
         settings-key: ConfirmationCodesService-Google2FaConfirmationMaxTries
     Google2FaSetupDisabled:

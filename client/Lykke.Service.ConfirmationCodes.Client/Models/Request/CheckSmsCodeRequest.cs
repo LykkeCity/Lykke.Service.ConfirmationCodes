@@ -10,6 +10,7 @@ namespace Lykke.Service.ConfirmationCodes.Client.Models.Request
         /// <summary>
         /// Verification code
         /// </summary>
+        [Required]
         public string Code { get; set; }
         
         /// <summary>
@@ -22,6 +23,7 @@ namespace Lykke.Service.ConfirmationCodes.Client.Models.Request
         /// <summary>
         /// Client Id
         /// </summary>
+        [Required]
         public string ClientId { get; set; }
     }
 }

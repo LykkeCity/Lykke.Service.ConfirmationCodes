@@ -23,7 +23,10 @@ namespace Lykke.Service.ConfirmationCodes.Services
             builder.RegisterInstance(_deploymentSettings);
             builder.RegisterInstance(_supportToolsSettings);
 
-            builder.RegisterType<ConfirmationCodesService>().AsImplementedInterfaces();
+            builder.RegisterType<ConfirmationCodesService>()
+                .WithParameter(TypedParameter.From(_supportToolsSettings.RepeatCallInverval))
+                .WithParameter(TypedParameter.From(_supportToolsSettings.CallsLimit))
+                .AsImplementedInterfaces();
             builder.RegisterType<EmailConfirmationService>().AsImplementedInterfaces();
             builder.RegisterType<Google2FaService>().AsImplementedInterfaces();
             builder.RegisterType<Google2FaBlacklistService>()

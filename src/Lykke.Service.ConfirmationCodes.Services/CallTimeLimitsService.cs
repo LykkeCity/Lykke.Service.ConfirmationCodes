@@ -12,14 +12,18 @@ namespace Lykke.Service.ConfirmationCodes.Services
     {
         private readonly ICallTimeLimitsRepository _callTimeLimitsRepository;
         private const string DefaultOperationName = "CallTimeLimitsService.ProcessCall";
-        private readonly TimeSpan _repeatEnabledTimeSpan = TimeSpan.FromMinutes(1);
-        private int _callLimit = 3;
+        private readonly TimeSpan _repeatEnabledTimeSpan;
+        private readonly int _callsLimit;
 
         public CallTimeLimitsService(
-            ICallTimeLimitsRepository callTimeLimitsRepository
+            ICallTimeLimitsRepository callTimeLimitsRepository,
+            TimeSpan repeatEnabledTimeSpan,
+            int callsLimit
             )
         {
             _callTimeLimitsRepository = callTimeLimitsRepository;
+            _repeatEnabledTimeSpan = repeatEnabledTimeSpan;
+            _callsLimit = callsLimit;
         }
         
         public async Task<CallLimitsResult> ProcessCallLimitsAsync(string clientId, string operation = null, bool checkRepeat = true)
@@ -30,7 +34,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
             
             if (callDates.Any())
             {
-                if (callDates.Count >= _callLimit)
+                if (callDates.Count >= _callsLimit)
                 {
                     return CallLimitsResult.Failed(CallLimitStatus.LimitExceed);
                 }
