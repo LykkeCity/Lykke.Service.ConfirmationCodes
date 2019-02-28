@@ -6,7 +6,7 @@ using Lykke.Common.Log;
 using Lykke.Service.ConfirmationCodes.Client.Models.Request;
 using Lykke.Service.ConfirmationCodes.Client.Models.Response;
 using Lykke.Service.ConfirmationCodes.Contract;
-using Lykke.Service.ConfirmationCodes.Core.Entities;
+using Lykke.Service.ConfirmationCodes.Contract.Models;
 using Lykke.Service.ConfirmationCodes.Core.Exceptions;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 using Lykke.Service.ConfirmationCodes.Services;

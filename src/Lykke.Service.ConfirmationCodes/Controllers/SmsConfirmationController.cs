@@ -8,10 +8,9 @@ using Lykke.Service.ConfirmationCodes.Core.Services;
 using Lykke.Service.ConfirmationCodes.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Common;
 using Lykke.Service.ConfirmationCodes.Contract;
+using Lykke.Service.ConfirmationCodes.Contract.Models;
 using Lykke.Service.ConfirmationCodes.Core.Exceptions;
-using CallLimitStatus = Lykke.Service.ConfirmationCodes.Contract.Models.CallLimitStatus;
 
 namespace Lykke.Service.ConfirmationCodes.Controllers
 {
@@ -59,7 +58,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
 
             return Ok(new SmsConfirmationResponse
             {
-                Status = result.Status.ToString().ParseEnum<CallLimitStatus>()
+                Status = result.Status
             });
         }
 
@@ -94,7 +93,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         {
             SmsCheckResult checkResult = await _confirmationCodesService.CheckSmsAsync(model.ClientId, model.Phone, model.Code, ConfirmOperations.Google2FaSmsConfirm);
 
-            if (checkResult.Status == Core.Entities.CallLimitStatus.LimitExceed)
+            if (checkResult.Status == CallLimitStatus.LimitExceed)
                 throw new Google2FaTooManyAttemptsException(model.ClientId, "Client has exceeded maximum consecutive failed verification attempts");
             
             return Ok(new VerificationResult{IsValid = checkResult.Result });
