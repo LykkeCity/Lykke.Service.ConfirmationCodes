@@ -5,7 +5,9 @@ using Common.Log;
 using Lykke.Common.Log;
 using Lykke.Service.ConfirmationCodes.Client.Models.Request;
 using Lykke.Service.ConfirmationCodes.Client.Models.Response;
-using Lykke.Service.ConfirmationCodes.Core.Repositories;
+using Lykke.Service.ConfirmationCodes.Contract.Models;
+using Lykke.Service.ConfirmationCodes.Core.Entities;
+using Lykke.Service.ConfirmationCodes.Core.Services;
 using Lykke.Service.ConfirmationCodes.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +17,15 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
     [ModelStateValidationActionFilter]
     public class CallTimeLimitsController : Controller
     {
-        private readonly ICallTimeLimitsRepository _callTimeLimitsRepository;
+        private readonly ICallTimeLimitsService _callTimeLimitsService;
         private readonly ILog _log;
 
         public CallTimeLimitsController(
-            ICallTimeLimitsRepository callTimeLimitsRepository,
+            ICallTimeLimitsService callTimeLimitsService,
             ILogFactory logFactory
             )
         {
-            _callTimeLimitsRepository = callTimeLimitsRepository;
+            _callTimeLimitsService = callTimeLimitsService;
             _log = logFactory.CreateLog(this);
         }
         
@@ -33,7 +35,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         {
             try
             {
-                int callsCount = await _callTimeLimitsRepository.GetCallsCount(model.Operation, model.ClientId);
+                int callsCount = await _callTimeLimitsService.GetCallsCountAsync(model.Operation, model.ClientId);
 
                 return Ok(new CallsCountResponse { Count = callsCount });
             }
@@ -51,13 +53,32 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
         {
             try
             {
-                await _callTimeLimitsRepository.ClearCallsHistory(model.Operation, model.ClientId);
+                await _callTimeLimitsService.ClearCallsHistoryAsync(model.Operation, model.ClientId);
 
                 return Ok();
             }
             catch (Exception exception)
             {
                 _log.WriteError(nameof(ClearCallsCount), new { model.ClientId }, exception);
+                
+                throw;
+            }
+        }
+        
+        [HttpPost("checkLimit")]
+        [ProducesResponseType(typeof(CallLimitStatus), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> CheckCallsLimit([FromBody] CheckOperationLimitRequest model)
+        {
+            try
+            {
+                CallLimitsResult callLimitsResult = await _callTimeLimitsService.ProcessCallLimitsAsync
+                    (model.ClientId, model.Operation, model.RepeatCheck, false);
+
+                return Ok(callLimitsResult.Status);
+            }
+            catch (Exception exception)
+            {
+                _log.WriteError(nameof(CheckCallsLimit), model, exception);
                 
                 throw;
             }

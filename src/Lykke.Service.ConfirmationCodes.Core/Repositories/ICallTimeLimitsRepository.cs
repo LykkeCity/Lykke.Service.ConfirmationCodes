@@ -8,7 +8,7 @@ namespace Lykke.Service.ConfirmationCodes.Core.Repositories
     {
         Task InsertRecordAsync(string method, string clientId);
         Task<IReadOnlyCollection<DateTime>> GetCallHistoryAsync(string method, string clientId);
-        Task<int> GetCallsCount(string method, string clientId);
-        Task ClearCallsHistory(string method, string clietnId);
+        Task<int> GetCallsCountAsync(string method, string clientId);
+        Task ClearCallsHistoryAsync(string method, string clietnId);
     }
 }

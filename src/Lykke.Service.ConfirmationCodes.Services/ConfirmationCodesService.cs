@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Lykke.Service.ClientAccount.Client;
+using Lykke.Service.ConfirmationCodes.Contract.Models;
 using Lykke.Service.ConfirmationCodes.Core.Entities;
 using Lykke.Service.ConfirmationCodes.Core.Messages;
 using Lykke.Service.ConfirmationCodes.Core.Repositories;
