@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Service.ConfirmationCodes.Client.Models.Request;
 using Lykke.Service.ConfirmationCodes.Client.Models.Response;
+using Lykke.Service.ConfirmationCodes.Contract.Models;
 using Refit;
 
 namespace Lykke.Service.ConfirmationCodes.Client
@@ -122,5 +123,11 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// </summary>
         [Post("/api/CallTimeLimits/clear")]
         Task ClearCallsCountAsync([Body] ClearCallsCountRequest model);
+
+        /// <summary>
+        /// Checks call limits for the operation
+        /// </summary>
+        [Post("/api/CallTimeLimits/checkLimit")]
+        Task<CallLimitStatus> CheckCallsLimitAsync([Body] CheckOperationLimitRequest model);
     }
 }

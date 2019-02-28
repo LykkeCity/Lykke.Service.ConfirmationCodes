@@ -30,13 +30,13 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
             return result.Select(x => x.DateTime).ToArray();
         }
 
-        public async Task<int> GetCallsCount(string method, string clientId)
+        public async Task<int> GetCallsCountAsync(string method, string clientId)
         {
             var all = await _tableStorage.GetDataAsync(ApiCallHistoryRecord.GeneratePartitionKey(method, clientId));
             return all.Count();
         }
 
-        public async Task ClearCallsHistory(string method, string clientId)
+        public async Task ClearCallsHistoryAsync(string method, string clientId)
         {
             var all = await _tableStorage.GetDataAsync(ApiCallHistoryRecord.GeneratePartitionKey(method, clientId));
             await _tableStorage.DeleteAsync(all);
