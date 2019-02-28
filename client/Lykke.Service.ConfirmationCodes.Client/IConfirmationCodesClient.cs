@@ -128,6 +128,6 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// Checks call limits for the operation
         /// </summary>
         [Post("/api/CallTimeLimits/checkLimit")]
-        Task<CallLimitStatus> CheckCallsLimit([Body] CheckOperationLimitRequest model);
+        Task<CallLimitStatus> CheckCallsLimitAsync([Body] CheckOperationLimitRequest model);
     }
 }
