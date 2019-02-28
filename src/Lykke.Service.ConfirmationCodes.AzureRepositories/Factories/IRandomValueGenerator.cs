@@ -3,5 +3,6 @@
     public interface IRandomValueGenerator
     {
         int GetInt(int min, int max);
+        string GetCode(int codeLength, bool isReal);
     }
 }

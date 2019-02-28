@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Lykke.GoogleAuthenticator;
-using Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories;
 using Lykke.Service.ConfirmationCodes.Core.Repositories;
 using Lykke.Service.ConfirmationCodes.Core.Services;
 

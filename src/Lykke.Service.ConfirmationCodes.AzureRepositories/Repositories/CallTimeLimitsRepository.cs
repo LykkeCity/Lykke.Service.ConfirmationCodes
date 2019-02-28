@@ -23,14 +23,9 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
             return _tableStorage.InsertAndGenerateRowKeyAsDateTimeAsync(entity, entity.DateTime);
         }
 
-        public async Task<IReadOnlyCollection<DateTime>> GetCallHistoryAsync(string method, string clientId, TimeSpan period)
+        public async Task<IReadOnlyCollection<DateTime>> GetCallHistoryAsync(string method, string clientId)
         {
-            var timeNow = DateTime.UtcNow;
-
-            var result =
-                await
-                    _tableStorage.WhereAsync(ApiCallHistoryRecord.GeneratePartitionKey(method, clientId),
-                        timeNow - period, timeNow, ToIntervalOption.IncludeTo, includeTime: true);
+            var result = await _tableStorage.GetDataAsync(ApiCallHistoryRecord.GeneratePartitionKey(method, clientId));
 
             return result.Select(x => x.DateTime).ToArray();
         }
