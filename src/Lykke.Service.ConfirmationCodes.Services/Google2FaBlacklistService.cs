@@ -10,7 +10,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
     {
         private readonly IDatabase _redisDb;
         private readonly int _maxTries;
-        
+
         private const string SuccessScript = @"
                 local num=redis.call('get', KEYS[1])
                 if(num ~= false)
@@ -28,10 +28,15 @@ namespace Lykke.Service.ConfirmationCodes.Services
             _redisDb = redisDb;
             _maxTries = maxTries;
         }
-        
+
         public Task ClientFailedAsync(string clientId)
         {
             return _redisDb.StringIncrementAsync(GetCounterKeyForClient(clientId));
+        }
+
+        public Task ResetAsyncAsync(string clientId)
+        {
+            return _redisDb.KeyDeleteAsync(GetCounterKeyForClient(clientId));
         }
 
         public async Task<bool> IsClientBlockedAsync(string clientId)
@@ -42,7 +47,7 @@ namespace Lykke.Service.ConfirmationCodes.Services
         public async Task ClientSucceededAsync(string clientId)
         {
             var clientKey = GetCounterKeyForClient(clientId);
-            
+
             await _redisDb.ScriptEvaluateAsync(SuccessScript, new[] {(RedisKey)clientKey}, new[] {(RedisValue)_maxTries});
         }
 
