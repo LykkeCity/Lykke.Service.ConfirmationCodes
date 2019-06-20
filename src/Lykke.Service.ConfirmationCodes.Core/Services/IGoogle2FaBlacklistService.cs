@@ -7,5 +7,6 @@ namespace Lykke.Service.ConfirmationCodes.Core.Services
         Task ClientSucceededAsync(string clientId);
         Task<bool> IsClientBlockedAsync(string clientId);
         Task ClientFailedAsync(string clientId);
+        Task ResetAsyncAsync(string clientId);
     }
 }
