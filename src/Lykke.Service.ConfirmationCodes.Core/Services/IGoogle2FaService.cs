@@ -9,5 +9,6 @@ namespace Lykke.Service.ConfirmationCodes.Core.Services
         Task ActivateAsync(string clientId);
         Task<string> CreateAsync(string clientId);
         Task<bool> CheckCodeAsync(string clientId, string code, bool isActivationCheck = false);
+        Task RemoveAsync(string clientId);
     }
 }

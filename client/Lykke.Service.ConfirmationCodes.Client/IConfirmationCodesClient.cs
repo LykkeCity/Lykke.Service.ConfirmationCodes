@@ -45,7 +45,7 @@ namespace Lykke.Service.ConfirmationCodes.Client
         [Post("/api/SmsConfirmation")]
         [Obsolete("Use SendSmsConfirmCodeAsync instead")]
         Task SendSmsConfirmationAsync([Body] SendSmsConfirmationRequest model);
-        
+
         /// <summary>
         /// Sends confirmation code via sms
         /// </summary>
@@ -57,7 +57,7 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// </summary>
         [Post("/api/SmsConfirmation/VerifyCode")]
         Task<VerificationResult> VerifySmsCodeAsync([Body] VerifySmsConfirmationRequest model);
-        
+
         /// <summary>
         /// Checks if code is valid with operation lockout
         /// </summary>
@@ -87,7 +87,7 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// </summary>
         [Put("/api/Google2FA/Setup")]
         Task<VerifySetupGoogle2FaResponse> Google2FaVerifySetupAsync([Body] VerifySetupGoogle2FaRequest model);
-        
+
         /// <summary>
         /// Checks if user has Google 2FA set up
         /// </summary>
@@ -99,7 +99,7 @@ namespace Lykke.Service.ConfirmationCodes.Client
         /// </summary>
         [Get("/api/Google2FA/CheckCode")]
         Task<bool> Google2FaCheckCodeAsync([Query] string clientId, [Query] string code);
-        
+
         /// <summary>
         /// Check if user is blacklisted
         /// </summary>
@@ -107,17 +107,23 @@ namespace Lykke.Service.ConfirmationCodes.Client
         Task<Google2FaBlacklistCheckResponse> Google2FaIsClientBlacklistedAsync([Query] string clientId);
 
         /// <summary>
+        /// Resets Google 2FA set up
+        /// </summary>
+        [Delete("/api/Google2FA/Reset")]
+        Task<Google2FaBlacklistCheckResponse> Google2FaResetAsync([Query] string clientId);
+
+        /// <summary>
         /// Liveness probe
         /// </summary>
         [Get("/api/IsAlive")]
         Task<IsAliveResponse> IsAlive([Query] SmsConfirmationRequest model);
-        
+
         /// <summary>
         /// Gets calls count for specified operation
         /// </summary>
         [Post("/api/CallTimeLimits/count")]
         Task<CallsCountResponse> GetCallsCountAsync([Body] CallsCountRequest model);
-        
+
         /// <summary>
         /// Gets calls count for specified operation
         /// </summary>

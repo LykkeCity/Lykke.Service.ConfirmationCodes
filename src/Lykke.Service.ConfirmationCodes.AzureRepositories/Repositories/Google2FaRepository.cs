@@ -17,7 +17,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
         {
             _tableStorage = tableStorage;
         }
-        
+
         public async Task<IGoogle2FaSecret> GetAsync(string clientId)
         {
             return
@@ -31,7 +31,7 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
             var entity = await _tableStorage.GetDataAsync(
                 Google2FaSecretEntity.GeneratePartitionKey(),
                 clientId);
-            
+
             if(entity == null)
                 throw new InvalidOperationException();
 
@@ -45,10 +45,15 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Repositories
         public async Task<IGoogle2FaSecret> InsertOrUpdateAsync(string clientId, string secret)
         {
             var entity = Google2FaSecretEntity.Create(clientId, secret);
-            
+
             await _tableStorage.InsertOrMergeAsync(entity);
 
             return entity;
+        }
+
+        public Task RemoveAsync(string clientId)
+        {
+            return _tableStorage.DeleteIfExistAsync(Google2FaSecretEntity.GeneratePartitionKey(), clientId);
         }
     }
 }
