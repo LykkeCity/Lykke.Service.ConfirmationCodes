@@ -50,7 +50,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             {
                 if (await _google2FaService.ClientHasEnabledAsync(model.ClientId))
                     throw new Google2FaAlreadySetException(model.ClientId, "Cannot set up 2FA because it's already set up");
-                
+
                 if (_confirmationCodesServiceSettings.Google2FaSetupDisabled)
                     throw new Exception("Google 2FA setup is disabled");
 
@@ -61,13 +61,13 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             catch (Exception exception)
             {
                 _log.WriteError(nameof(Setup), new { model.ClientId }, exception);
-                
+
                 switch (exception)
                 {
                     case Google2FaAlreadySetException _:
                         return BadRequest();
                 }
-                
+
                 throw;
             }
         }
@@ -89,7 +89,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 {
                     throw new Google2FaNoSetupInProgressException(model.ClientId, "No 2FA setup is in progress");
                 }
-                
+
                 if (await _blacklistService.IsClientBlockedAsync(model.ClientId))
                 {
                     throw new Google2FaTooManyAttemptsException(model.ClientId, "Client has exceeded maximum consecutive failed 2FA code verification attempts");
@@ -97,10 +97,10 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
 
                 var checkResult = await _confirmationCodesService.CheckSmsAsync(model.ClientId, model.Phone,
                     model.SmsCode, ConfirmOperations.Google2FaSmsConfirm);
-                
+
                 if (checkResult.Status == CallLimitStatus.LimitExceed)
                     throw new Google2FaTooManyAttemptsException(model.ClientId, "Client has exceeded maximum consecutive failed sms verification attempts");
-                
+
                 if (checkResult.Status == CallLimitStatus.Allowed && checkResult.Result)
                 {
                     var codeIsValid = await _google2FaService.CheckCodeAsync(model.ClientId, model.GaCode, true);
@@ -154,7 +154,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             catch (Exception exception)
             {
                 _log.WriteError(nameof(ClientHasSetup), new { clientId }, exception);
-                
+
                 throw;
             }
         }
@@ -175,7 +175,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
                 {
                     throw new Google2FaTooManyAttemptsException(clientId, "Client has exceeded maximum consecutive failed verification attempts");
                 }
-                
+
                 var codeIsValid = await _google2FaService.CheckCodeAsync(clientId, code);
 
                 if (codeIsValid)
@@ -192,7 +192,7 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
             catch (Exception exception)
             {
                 _log.WriteError(nameof(Check2FaCode), new { clientId }, exception);
-                
+
                 switch (exception)
                 {
                     case Google2FaNotSetUpException _:
@@ -231,6 +231,15 @@ namespace Lykke.Service.ConfirmationCodes.Controllers
 
                 throw;
             }
+        }
+
+        [HttpDelete]
+        [Route("Reset")]
+        [ProducesResponseType(typeof(void), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> Reset2Fa([FromQuery] string clientId)
+        {
+            await _google2FaService.RemoveAsync(clientId);
+            return Ok();
         }
     }
 }
