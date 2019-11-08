@@ -7,5 +7,6 @@ namespace Lykke.Service.ConfirmationCodes.Contract
     {
         public const string Google2FaSendSms = "Google2FaSendSms";
         public const string Google2FaSmsConfirm = "Google2FaSmsConfirm";
+        public const string Google2FaReset = "Google2FaReset";
     }
 }
