@@ -13,21 +13,21 @@ namespace Lykke.Service.ConfirmationCodes.Services
     internal class ConfirmationCodesService : IConfirmationCodesService
     {
         private readonly ISmsVerificationCodeRepository _smsVerificationCodeRepository;
-        private readonly ISmsRequestProducer _smsRequestProducer;        
+        private readonly ISmsCommandProducer _smsCommandProducer;        
         private readonly ISupportToolsSettings _supportToolsSettings;
         private readonly ICallTimeLimitsService _callTimeLimitsService;
         private readonly IClientAccountClient _clientAccountService;
         private readonly IDeploymentSettings _deploymentSettings;
 
         public ConfirmationCodesService(ISmsVerificationCodeRepository smsVerificationCodeRepository,
-            ISmsRequestProducer smsRequestProducer,
+            ISmsCommandProducer smsCommandProducer,
             ICallTimeLimitsService callTimeLimitsService,
             IClientAccountClient clientAccountService,
             IDeploymentSettings deploymentSettings,
             ISupportToolsSettings supportToolsSettings)
         {
             _smsVerificationCodeRepository = smsVerificationCodeRepository;
-            _smsRequestProducer = smsRequestProducer;            
+            _smsCommandProducer = smsCommandProducer;            
 
             _callTimeLimitsService = callTimeLimitsService;
             _clientAccountService = clientAccountService;
@@ -66,14 +66,21 @@ namespace Lykke.Service.ConfirmationCodes.Services
                     _deploymentSettings.IsProduction);
             }
 
-            await _smsRequestProducer.SendSmsAsync(request.PartnerId, request.PhoneNumber,
-                new SmsConfirmationData { ConfirmationCode = smsCode.Code },
-                smsSettings.UseAlternativeProvider);
+            await _smsCommandProducer.SendSms(
+                request.PartnerId,
+                request.PhoneNumber,
+                new SmsConfirmationData
+                {
+                    ConfirmationCode = smsCode.Code
+                },
+                smsSettings.UseAlternativeProvider,
+                request.Reason,
+                request.OuterRequestId);
 
             return SmsRequestResult.SuccessResult(smsCode.Code);
         }
 
-        public async Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority = false)
+        public async Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority, string reason, string outerRequestId)
         {
             ISmsVerificationCode smsCode;
             //todo: refactor if
@@ -88,8 +95,16 @@ namespace Lykke.Service.ConfirmationCodes.Services
                     _deploymentSettings.IsProduction);
             }
 
-            await _smsRequestProducer.SendSmsAsync(partnerId, phoneNumber,
-                new SmsConfirmationData {ConfirmationCode = smsCode.Code}, false);
+            await _smsCommandProducer.SendSms(
+                partnerId,
+                phoneNumber,
+                new SmsConfirmationData
+                {
+                    ConfirmationCode = smsCode.Code
+                },
+                false,
+                reason,
+                outerRequestId);
 
             return smsCode.Code;
         }

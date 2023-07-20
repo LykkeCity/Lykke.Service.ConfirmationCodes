@@ -21,15 +21,17 @@ namespace Lykke.Service.ConfirmationCodes.AzureRepositories.Messages
             );
         }
 
-        public Task ProduceSendSmsCommand<T>(string partnerId, string phoneNumber, T msgData,
-            bool useAlternativeProvider)
+        public Task SendSms<T>(string partnerId, string phoneNumber, T msgData,
+            bool useAlternativeProvider, string reason, string outerRequestId)
         {
             var msg = new SendSmsData<T>
             {
                 PartnerId = partnerId,
                 MessageData = msgData,
                 PhoneNumber = phoneNumber,
-                UseAlternativeProvider = useAlternativeProvider
+                UseAlternativeProvider = useAlternativeProvider,
+                Reason = reason,
+                OuterRequestId = outerRequestId
             };
 
             return _queueExt.PutMessageAsync(msg);

@@ -6,7 +6,7 @@ namespace Lykke.Service.ConfirmationCodes.Core.Services
     public interface IConfirmationCodesService
     {
         Task<SmsRequestResult> RequestSmsCode(SmsCodeRequest request);
-        Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority = false);
+        Task<string> RequestSmsCode(string partnerId, string phoneNumber, bool isPriority, string reason, string outerRequestId);
         Task<bool> CheckAsync(string partnerId, string mobilePhone, string code);
         Task<SmsCheckResult> CheckSmsAsync(string clientId, string mobilePhone, string code, string operation);
         Task<ISmsVerificationPriorityCode> GetPriorityCode(string partnerId, string mobilePhone);

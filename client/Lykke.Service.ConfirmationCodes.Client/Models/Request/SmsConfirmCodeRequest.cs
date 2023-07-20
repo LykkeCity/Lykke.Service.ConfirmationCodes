@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Lykke.Service.ConfirmationCodes.Client.Models.Request
 {
@@ -23,5 +23,15 @@ namespace Lykke.Service.ConfirmationCodes.Client.Models.Request
         /// Operation name
         /// </summary>
         public string Operation { get; set; }
+
+        /// <summary>
+        /// Reason
+        /// </summary>
+        public string Reason { get; set; }
+
+        /// <summary>
+        /// Outer request ID
+        /// </summary>
+        public string OuterRequestId { get; set; }
     }
 }
