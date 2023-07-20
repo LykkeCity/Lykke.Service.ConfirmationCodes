@@ -17,5 +17,13 @@ namespace Lykke.Service.ConfirmationCodes.Client.Models.Request
         /// Partner Id
         /// </summary>
         public string PartnerId { get; set; }
+        /// <summary>
+        /// Reason
+        /// </summary>
+        public string Reason { get; set; }
+        /// <summary>
+        /// OuterRequestId
+        /// </summary>
+        public string OuterRequestId { get; set; }
     }
 }
